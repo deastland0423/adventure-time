@@ -36,3 +36,11 @@
     transform: rotate(360deg);
   }
 }
+
+.message.success {
+  color: #0f0;
+}
+
+.message.error {
+  color: #f00;
+}
