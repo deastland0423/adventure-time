@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import AppConfig from '../config';
 
 class UsersComponent extends Component {
     constructor(props) {
@@ -10,7 +11,7 @@ class UsersComponent extends Component {
     }
 
     componentDidMount() {
-        let usersUrl = 'https://xlxp3abvkg.execute-api.us-east-1.amazonaws.com/dev/users';
+        let usersUrl = `${AppConfig.backend_host}/users`;
         axios
             .get(usersUrl)
             .then( response => {

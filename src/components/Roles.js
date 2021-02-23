@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import AppConfig from '../config';
 
 class RolesComponent extends Component {
     constructor(props) {
@@ -10,7 +11,7 @@ class RolesComponent extends Component {
     }
 
     componentDidMount() {
-        let rolesUrl = 'https://xlxp3abvkg.execute-api.us-east-1.amazonaws.com/dev/roles';
+        let rolesUrl = `${AppConfig.backend_host}/roles`;
         axios
             .get(rolesUrl)
             .then( response => {
