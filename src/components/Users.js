@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import AppConfig from '../config';
+import Table from './Table';
 
 class UsersComponent extends Component {
     constructor(props) {
@@ -16,18 +17,27 @@ class UsersComponent extends Component {
             .get(usersUrl)
             .then( response => {
                 this.setState( {
-                    users: response.data
+                    users: response.data.map(row => {row.id = row.user_id; return row})
                 })
             })
-        // Axios request here.
     }
 
     render() {
+        const headers=[
+            {
+                id: 'user_id',
+                label: 'User ID'
+            },
+            {
+                id: 'email_address',
+                label: 'Email'
+            }
+        ];
         return(
-            <ul>
-                {this.state.users.map(item => <li key={item.user_id}>{item.email_address}</li>)}
-            </ul>
-            // Your jsx here
+            <Table
+                headers={headers}
+                getData={() => this.state.users}
+            />
         );
     }
 }

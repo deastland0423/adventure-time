@@ -28,7 +28,7 @@ function App() {
       </div>
       <footer>
         <div className='footer'>
-          Built by Daniel Eastland, with assistance from Shedrack Akintayo
+          Built by Daniel Eastland and Benjamin Bradley, with assistance from Shedrack Akintayo
         </div>
       </footer>
     </div>

@@ -44,3 +44,12 @@
 .message.error {
   color: #f00;
 }
+
+.centered {
+  margin: 0 auto;
+}
+.data-table th,
+.data-table td {
+  border: 1px solid black;
+  padding: 5;
+}

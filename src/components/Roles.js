@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import AppConfig from '../config';
+import Table from './Table';
 
 class RolesComponent extends Component {
     constructor(props) {
@@ -16,18 +17,27 @@ class RolesComponent extends Component {
             .get(rolesUrl)
             .then( response => {
                 this.setState( {
-                    roles: response.data
+                    roles: response.data.map(row => {row.id = row.role_id; return row})
                 })
             })
-        // Axios request here.
     }
 
     render() {
+        const headers=[
+            {
+                id: 'role_id',
+                label: 'Role ID'
+            },
+            {
+                id: 'role_name',
+                label: 'Role Type'
+            }
+        ];
         return(
-            <ul>
-                {this.state.roles.map(item => <li key={item.role_id}>{item.role_type}</li>)}
-            </ul>
-            // Your jsx here
+            <Table
+                headers={headers}
+                getData={() => this.state.roles}
+            />
         );
     }
 }

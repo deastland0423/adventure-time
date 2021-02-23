@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import AppConfig from '../config';
+import Table from './Table';
 
 class LocationsComponent extends Component {
     constructor(props) {
@@ -16,16 +17,27 @@ class LocationsComponent extends Component {
             .get(locationsUrl)
             .then( response => {
                 this.setState( {
-                    locations: response.data
+                    locations: response.data.map(row => {row.id = row.location_id; return row})
                 })
             })
     }
 
     render() {
+        const headers=[
+            {
+                id: 'location_id',
+                label: 'ID'
+            },
+            {
+                id: 'name',
+                label: 'Name'
+            }
+        ];
         return(
-            <ul>
-                {this.state.locations.map(item => <li key={item.location_id}>{item.name}</li>)}
-            </ul>
+            <Table
+                headers={headers}
+                getData={() => this.state.locations}
+            />
         );
     }
 }
