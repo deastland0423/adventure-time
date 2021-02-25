@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import AppConfig from '../config';
 import Table from './Table';
+import locationDef from './locationDef';
+import LocationForm from './LocationForm';
 
 class LocationsComponent extends Component {
     constructor(props) {
@@ -17,27 +19,20 @@ class LocationsComponent extends Component {
             .get(locationsUrl)
             .then( response => {
                 this.setState( {
-                    locations: response.data.map(row => {row.id = row.location_id; return row})
+                    locations: response.data.map(row => {row.id = row[locationDef.id_field]; return row})
                 })
             })
     }
 
     render() {
-        const headers=[
-            {
-                id: 'location_id',
-                label: 'ID'
-            },
-            {
-                id: 'name',
-                label: 'Name'
-            }
-        ];
         return(
-            <Table
-                headers={headers}
-                getData={() => this.state.locations}
-            />
+            <div>
+                <LocationForm onComplete={() => this.componentDidMount()}/>
+                <Table
+                    headers={locationDef.fields}
+                    getData={() => this.state.locations}
+                />
+            </div>
         );
     }
 }
