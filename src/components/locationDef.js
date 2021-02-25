@@ -11,6 +11,10 @@ const locationDef = {
             label: 'Name',
             html_input_type: 'text'
         }
-    ]
+    ],
+    endpoints: {
+        getMultipleByQuery: '/locations',
+        create: '/locations'
+    }
 };
 export default locationDef;

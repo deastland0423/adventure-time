@@ -2,42 +2,41 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import AppConfig from '../config';
 import Table from './Table';
+import BasicForm from './BasicForm';
+import userDef from './userDef';
 
 class UsersComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            users: []
+            records: []
         };
     }
 
+    tableFields() {
+        return userDef.fields.filter(field => field.table_display);
+    }
+
     componentDidMount() {
-        let usersUrl = `${AppConfig.backend_host}/users`;
+        let getAllUrl = `${AppConfig.backend_host}${userDef.endpoints.getMultipleByQuery}`;
         axios
-            .get(usersUrl)
+            .get(getAllUrl)
             .then( response => {
                 this.setState( {
-                    users: response.data.map(row => {row.id = row.user_id; return row})
+                    records: response.data.map(row => {row.id = row[userDef.id_field]; return row})
                 })
             })
     }
 
     render() {
-        const headers=[
-            {
-                id: 'user_id',
-                label: 'User ID'
-            },
-            {
-                id: 'email_address',
-                label: 'Email'
-            }
-        ];
         return(
-            <Table
-                headers={headers}
-                getData={() => this.state.users}
-            />
+            <div>
+                <BasicForm entityDef={userDef} onComplete={() => this.componentDidMount()}/>
+                <Table
+                    headers={this.tableFields()}
+                    getData={() => this.state.records}
+                />
+            </div>
         );
     }
 }

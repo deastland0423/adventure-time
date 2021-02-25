@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import AppConfig from '../config';
-import locationDef from './locationDef';
 
-class LocationFormComponent extends Component {
+class BasicFormComponent extends Component {
+    /**
+     * Must specify entityDef in props
+     */
     constructor(props) {
         super(props);
         this.state = {
@@ -17,8 +19,8 @@ class LocationFormComponent extends Component {
 
     contentFields() {
         let contentFields = [];
-        locationDef.fields.forEach(field => {
-            if(field.id != locationDef.id_field) {
+        this.props.entityDef.fields.forEach(field => {
+            if(field.id != this.props.entityDef.id_field) {
                 contentFields.push(field);
             }
         });
@@ -27,9 +29,9 @@ class LocationFormComponent extends Component {
 
     handleSubmit = async (event) => {
         event.preventDefault();
-          let locationsUrl = `${AppConfig.backend_host}/locations`;
+          let createUrl = `${AppConfig.backend_host}${this.props.entityDef.endpoints.create}`;
           axios
-              .post(locationsUrl, this.state)
+              .post(createUrl, this.state)
               .then( response => {
                 this.setState( { success_message: response.data, error_message: '' } );
                 this.props.onComplete();
@@ -48,15 +50,15 @@ class LocationFormComponent extends Component {
                 {this.contentFields().map(field =>
                     <div>
                         <label>{field.label}</label>
-                        <input type="{field.html_input_type}" name="{field.id}" defaultValue={this.state[field.id]}
+                        <input type={field.html_input_type} name={field.id} defaultValue={this.state[field.id]}
                           onChange={event => this.setState({ [field.id]: event.target.value })}
                         /><br/>
                     </div>
                 )}
-                <input type="submit" value={`Create ${locationDef.label}`} data-test="submit" />
+                <input type="submit" value={`Create ${this.props.entityDef.label}`} data-test="submit" />
             </form>
         );
     }
 }
 
-export default LocationFormComponent;
+export default BasicFormComponent;

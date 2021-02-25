@@ -2,24 +2,24 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import AppConfig from '../config';
 import Table from './Table';
+import BasicForm from './BasicForm';
 import locationDef from './locationDef';
-import LocationForm from './LocationForm';
 
 class LocationsComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            locations: []
+            records: []
         };
     }
 
     componentDidMount() {
-        let locationsUrl = `${AppConfig.backend_host}/locations`;
+        let getAllUrl = `${AppConfig.backend_host}${locationDef.endpoints.getMultipleByQuery}`;
         axios
-            .get(locationsUrl)
+            .get(getAllUrl)
             .then( response => {
                 this.setState( {
-                    locations: response.data.map(row => {row.id = row[locationDef.id_field]; return row})
+                    records: response.data.map(row => {row.id = row[locationDef.id_field]; return row})
                 })
             })
     }
@@ -27,10 +27,10 @@ class LocationsComponent extends Component {
     render() {
         return(
             <div>
-                <LocationForm onComplete={() => this.componentDidMount()}/>
+                <BasicForm entityDef={locationDef} onComplete={() => this.componentDidMount()}/>
                 <Table
                     headers={locationDef.fields}
-                    getData={() => this.state.locations}
+                    getData={() => this.state.records}
                 />
             </div>
         );
