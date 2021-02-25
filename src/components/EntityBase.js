@@ -3,9 +3,11 @@ import axios from 'axios';
 import AppConfig from '../config';
 import Table from './Table';
 import BasicForm from './BasicForm';
-import locationDef from './locationDef';
 
-class LocationsComponent extends Component {
+class EntityBaseComponent extends Component {
+    /**
+     * Must specify entityDef in props
+     */
     constructor(props) {
         super(props);
         this.state = {
@@ -13,13 +15,17 @@ class LocationsComponent extends Component {
         };
     }
 
+    tableFields() {
+        return this.props.entityDef.fields.filter(field => field.table_display);
+    }
+
     componentDidMount() {
-        let getAllUrl = `${AppConfig.backend_host}${locationDef.endpoints.getMultipleByQuery}`;
+        let getAllUrl = `${AppConfig.backend_host}${this.props.entityDef.endpoints.getMultipleByQuery}`;
         axios
             .get(getAllUrl)
             .then( response => {
                 this.setState( {
-                    records: response.data.map(row => {row.id = row[locationDef.id_field]; return row})
+                    records: response.data.map(row => {row.id = row[this.props.entityDef.id_field]; return row})
                 })
             })
     }
@@ -27,9 +33,9 @@ class LocationsComponent extends Component {
     render() {
         return(
             <div>
-                <BasicForm entityDef={locationDef} onComplete={() => this.componentDidMount()}/>
+                <BasicForm entityDef={this.props.entityDef} onComplete={() => this.componentDidMount()}/>
                 <Table
-                    headers={locationDef.fields}
+                    headers={this.tableFields()}
                     getData={() => this.state.records}
                 />
             </div>
@@ -37,4 +43,4 @@ class LocationsComponent extends Component {
     }
 }
 
-export default LocationsComponent;
+export default EntityBaseComponent;

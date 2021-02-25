@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import Roles from './components/Roles';
-import Users from './components/Users';
-import Locations from './components/Locations';
+import EntityBase from './components/EntityBase';
+import locationDef from './components/locationDef';
+import roleDef from './components/roleDef';
+import userDef from './components/userDef';
 
 function App() {
 
@@ -11,15 +12,15 @@ function App() {
       <h1>Into The Unknown: Online Interface</h1>
       <div>
         <h3>Registered Players</h3>
-        <Users />
+        <EntityBase entityDef={userDef} />
       </div>
       <div>
         <h3>Locations</h3>
-        <Locations />
+        <EntityBase entityDef={locationDef} />
       </div>
       <div>
         <h3>Player Role Types</h3>
-        <Roles />
+        <EntityBase entityDef={roleDef} />
       </div>
       <footer>
         <div className='footer'>

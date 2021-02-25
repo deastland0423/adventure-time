@@ -4,12 +4,14 @@ const locationDef = {
     fields: [
         {
             id: 'location_id',
-            label: 'ID'
+            label: 'ID',
+            table_display: true
         },
         {
             id: 'name',
             label: 'Name',
-            html_input_type: 'text'
+            html_input_type: 'text',
+            table_display: true
         }
     ],
     endpoints: {
