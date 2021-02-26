@@ -9,12 +9,35 @@ class BasicFormComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          success_message: '',
-          error_message: ''
+            success_message: '',
+            error_message: ''
+        }
+        this.clearData();
+    }
+
+    clearData() {
+        let stateUpdate = {
+            success_message: '',
+            error_message: '',
+            isNew: true
         };
-        this.contentFields().forEach(field => {
-            this.state[field.id] = ''
+        this.props.entityDef.fields.forEach(field => {
+            // set each field to default value
+            stateUpdate[field.id] = ''
         });
+        this.setState(stateUpdate);
+    }
+
+    loadData(record) {
+        let stateUpdate = {
+            success_message: '',
+            error_message: '',
+            isNew: false
+        };
+        this.props.entityDef.fields.forEach(field => {
+            stateUpdate[field.id] = record[field.id];
+        });
+        this.setState(stateUpdate);
     }
 
     contentFields() {
@@ -29,17 +52,44 @@ class BasicFormComponent extends Component {
 
     handleSubmit = async (event) => {
         event.preventDefault();
-          let createUrl = `${AppConfig.backend_host}${this.props.entityDef.endpoints.create}`;
-          axios
-              .post(createUrl, this.state)
-              .then( response => {
-                this.setState( { success_message: response.data, error_message: '' } );
-                this.props.onComplete();
-              })
-              .catch( error => {
-                this.setState( { error_message: error.response.data, success_message: '' } );
-              })
+        if (this.state.isNew) {
+            const createUrl = `${AppConfig.backend_host}${this.props.entityDef.endpoints.create}`;
+            axios
+                .post(createUrl, this.state)
+                .then( response => {
+                    this.setState( { success_message: response.data, error_message: '' } );
+                    this.props.onComplete();
+                })
+                .catch( error => {
+                    this.setState( { error_message: error.response.data, success_message: '' } );
+                })
+            ;
+        } else {
+            const updateUrl = `${AppConfig.backend_host}${this.props.entityDef.endpoints.update}/${this.state[this.props.entityDef.id_field]}`;
+            axios
+                .put(updateUrl, this.state)
+                .then( response => {
+                    this.setState( { success_message: response.data, error_message: '' } );
+                    this.props.onComplete();
+                })
+                .catch( error => {
+                    this.setState( { error_message: error.response.data, success_message: '' } );
+                })
+            ;
+        }
     };
+
+
+    buttonHandler(handler) {
+        return async (event) => {
+            event.preventDefault();
+            if (typeof handler === "function") {
+                handler();
+            } else {
+                console.log("WARNING: No handler function defined.")
+            }
+        }
+    }
 
 
     render() {
@@ -55,7 +105,8 @@ class BasicFormComponent extends Component {
                         /><br/>
                     </div>
                 )}
-                <input type="submit" value={`Create ${this.props.entityDef.label}`} data-test="submit" />
+                <input type="submit" value={`${this.state.isNew ? 'Create' : 'Edit'} ${this.props.entityDef.label}`} data-test="submit" />
+                <button onClick={this.buttonHandler(this.props.onCancel)}>Cancel</button>
             </form>
         );
     }

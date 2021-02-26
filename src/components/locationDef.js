@@ -17,6 +17,8 @@ const locationDef = {
     endpoints: {
         getMultipleByQuery: '/locations',
         create: '/locations',
+        //TODO: figure out how to add /:location_id parameter to pattern, dynamically injected from record context?
+        update: '/location',
         deleteOne: '/location'
     }
 };
