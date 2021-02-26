@@ -16,7 +16,8 @@ const locationDef = {
     ],
     endpoints: {
         getMultipleByQuery: '/locations',
-        create: '/locations'
+        create: '/locations',
+        deleteOne: '/location'
     }
 };
 export default locationDef;

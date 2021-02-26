@@ -16,7 +16,7 @@ function App() {
       </div>
       <div>
         <h3>Locations</h3>
-        <EntityBase entityDef={locationDef} />
+        <EntityBase entityDef={locationDef} includeOps={true} />
       </div>
       <div>
         <h3>Player Role Types</h3>
