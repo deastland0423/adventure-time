@@ -43,7 +43,7 @@ class BasicFormComponent extends Component {
     contentFields() {
         let contentFields = [];
         this.props.entityDef.fields.forEach(field => {
-            if(field.id != this.props.entityDef.id_field) {
+            if(field.id !== this.props.entityDef.id_field) {
                 contentFields.push(field);
             }
         });
@@ -98,7 +98,7 @@ class BasicFormComponent extends Component {
                 <div className='message error'>{this.state.error_message}</div>
                 <div className='message success'>{this.state.success_message}</div>
                 {this.contentFields().map(field =>
-                    <div>
+                    <div key={this.props.entityDef.entity_type+'_form_'+field.id}>
                         <label>{field.label}</label>
                         <input type={field.html_input_type} name={field.id} defaultValue={this.state[field.id]}
                           onChange={event => this.setState({ [field.id]: event.target.value })}
