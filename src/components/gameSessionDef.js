@@ -48,11 +48,11 @@ const entityDef = {
         }
     ],
     endpoints: {
-        getMultipleByQuery: '/game_sessions/view',
-        create: '/game_sessions',
+        getMultipleByQuery: '/sessions/view',
+        create: '/sessions',
         //TODO: figure out how to add /:location_id parameter to pattern, dynamically injected from record context?
-        update: '/game_session',
-        deleteOne: '/game_session'
+        update: '/session',
+        deleteOne: '/session'
     }
 };
 export default entityDef;
