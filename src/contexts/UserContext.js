@@ -1,4 +1,5 @@
 import React, { createContext, useReducer, useContext } from "react";
+import constants from '../utils/constants';
 
 export const UserContext = createContext();
 
@@ -9,33 +10,28 @@ const initialState = {
   error: null
 };
 
-// Actions
-export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
-export const LOGIN_FAIL = "LOGIN_FAIL";
-export const LOGOUT = "LOGOUT";
-
 // Action creators
 export function loginSuccess(user) {
-  return { type: LOGIN_SUCCESS, user };
+  return { type: constants.LOGIN_SUCCESS, user };
 }
 
 export function loginFail(error) {
-  return { type: LOGIN_FAIL, error };
+  return { type: constants.LOGIN_FAIL, error };
 }
 
 export function logout() {
-  return { type: LOGOUT };
+  return { type: constants.LOGOUT };
 }
 
 // Reducer
-export function authReducer(state, action) {
+export const authReducer = (state, action) => {
   switch (action.type) {
-    case LOGIN_SUCCESS:
-      return { isLoggedIn: true, user: action.user, error: null };
-    case LOGIN_FAIL:
-      return { isLoggedIn: false, user: null, error: action.error };
-    case LOGOUT:
-      return { isLoggedIn: false, user: null, error: null };
+    case constants.LOGIN_SUCCESS:
+      return { ...state, isLoggedIn: true, user: action.user, error: null };
+    case constants.LOGIN_FAIL:
+      return { ...state, isLoggedIn: false, user: null, error: action.error };
+    case constants.LOGOUT:
+      return { ...state, isLoggedIn: false, user: null, error: null };
     default:
       return state;
   }
