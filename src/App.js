@@ -3,6 +3,7 @@ import './App.css';
 import EntityBase from './components/EntityBase';
 import sessionDef from './components/sessionDef';
 import locationDef from './components/locationDef';
+import adventureDef from './components/adventureDef';
 import userDef from './components/userDef';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
@@ -34,6 +35,7 @@ function App() {
                           <Tab>Users</Tab>
                           <Tab>Locations</Tab>
                           <Tab>Sessions</Tab>
+                          <Tab>Adventures</Tab>
                         </TabList>
 
                         <TabPanel>
@@ -47,6 +49,10 @@ function App() {
                         <TabPanel>
                             <h3>Game Sessions</h3>
                             <EntityBase entityDef={sessionDef} includeOps={true} />
+                        </TabPanel>
+                        <TabPanel>
+                            <h3>Calls to Adventure</h3>
+                            <EntityBase entityDef={adventureDef} includeOps={true} />
                         </TabPanel>
                       </Tabs>
                   </div>

@@ -40,6 +40,10 @@ class EntityBaseComponent extends Component {
                     const newValue = row[field.table_display]
                     tableRow[field.id] = newValue;
                 }
+                // Change Reserved 0/1 values to NO/YES
+                if (field.html_input_type === 'checkbox') {
+                    tableRow[field.id] === 1 ? tableRow[field.id] = 'YES' : tableRow[field.id] = 'NO';
+                }
             });
             return tableRow;
         })
