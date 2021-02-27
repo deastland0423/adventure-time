@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import EntityBase from './components/EntityBase';
-import gameSessionDef from './components/gameSessionDef';
+import sessionDef from './components/sessionDef';
 import locationDef from './components/locationDef';
 import userDef from './components/userDef';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
@@ -46,7 +46,7 @@ function App() {
                         </TabPanel>
                         <TabPanel>
                             <h3>Game Sessions</h3>
-                            <EntityBase entityDef={gameSessionDef} includeOps={true} />
+                            <EntityBase entityDef={sessionDef} includeOps={true} />
                         </TabPanel>
                       </Tabs>
                   </div>
