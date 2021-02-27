@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
 import EntityBase from './components/EntityBase';
-import sessionDef from './components/sessionDef';
-import locationDef from './components/locationDef';
-import adventureDef from './components/adventureDef';
-import userDef from './components/userDef';
+import sessionDef from './models/sessionDef';
+import locationDef from './models/locationDef';
+import adventureDef from './models/adventureDef';
+import userDef from './models/userDef';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import { UserProvider } from "./contexts/UserContext";
