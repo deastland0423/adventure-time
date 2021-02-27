@@ -43,7 +43,11 @@ class BasicFormComponent extends Component {
         };
         this.props.entityDef.fields.forEach(field => {
             // set each field to default value
-            stateUpdate[field.id] = ''
+            if ('default_value' in field) {
+                stateUpdate[field.id] = field.default_value
+            } else {
+                stateUpdate[field.id] = ''
+            }
         });
         stateUpdate = this.preUpdateState(stateUpdate);
         this.setState(stateUpdate);
