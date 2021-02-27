@@ -9,8 +9,15 @@ You can run the front-end app in a docker container by building and running the 
 `docker build dev -t nodedev`
 
 3. Start up the app in the local container.
-`docker run --rm -it --name mynode -v `pwd`:/app -p 3000:3000 nodedev`
+
+  Starting it for the first time:
+
+  `docker run -it --name mynode -v `pwd`:/app -p 3000:3000 nodedev`
 
 You can access the app locally now at http://localhost:3000/
 
-* To get a shell inside the container, run: `docker exec -it mynode bash`
+* If the container has already been started, you may see an error saying the name is in use.
+  If you see this, just run:
+  `docker start mynode`
+
+* To get a shell inside the container (e.g. to run yarn commands), run: `docker exec -it mynode bash`
