@@ -33,14 +33,15 @@ class EntityBaseComponent extends Component {
 
     tableData() {
         let tableData = this.state.records.map(row => {
+            let tableRow = {...row};
             this.props.entityDef.fields.forEach(field => {
                 // If entityDef.field's table_display is a string, assume it's the name of another field in the data and show the value of that field instead.
                 if (field.table_display && typeof(field.table_display) === 'string' && field.table_display in row) {
                     const newValue = row[field.table_display]
-                    row[field.id] = newValue;
+                    tableRow[field.id] = newValue;
                 }
             });
-            return row;
+            return tableRow;
         })
         return tableData;
     }

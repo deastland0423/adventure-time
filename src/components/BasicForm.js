@@ -22,7 +22,7 @@ class BasicFormComponent extends Component {
      */
     preUpdateState(stateUpdate) {
         this.props.entityDef.fields.forEach(field => {
-            if (!this.state[field.id] && field.auto_assign) {
+            if (!stateUpdate[field.id] && field.auto_assign) {
                 let contextArg = null;
                 if ('context' in this && this.context && 'auth' in this.context && this.context.auth) {
                     contextArg = {
@@ -145,7 +145,7 @@ class BasicFormComponent extends Component {
                         </div>
                         : null)
                 )}
-                <input type="submit" value={`${this.state.isNew ? 'Create' : 'Edit'} ${this.props.entityDef.label}`} data-test="submit" />
+                <input type="submit" value={`${this.state.isNew ? 'Create' : 'Save'} ${this.props.entityDef.label}`} data-test="submit" />
                 <button onClick={this.buttonHandler(this.props.onCancel)}>Cancel</button>
             </form>
         );

@@ -1,7 +1,7 @@
 const entityDef = {
-    entity_type: 'game_session',
+    entity_type: 'session',
     label: 'Session',
-    id_field: 'game_session_id',
+    id_field: 'session_id',
     label_field: 'start_timestamp',
     fields: [
         {
