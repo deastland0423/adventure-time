@@ -15,6 +15,20 @@ class BasicFormComponent extends Component {
         this.clearData();
     }
 
+    /**
+     * Runs before setState() to update calculated or auto-assigned fields
+     */
+    preUpdateState(stateUpdate) {
+        this.props.entityDef.fields.forEach(field => {
+            if (field.auto_assign) {
+                console.log(`triggering auto_assign for ${field.id}`)
+                stateUpdate[field.id] = field.auto_assign() //TODO(auto_assign): what context to pass in?
+                console.log(`auto_assign'ed value for ${field.id} = ${stateUpdate[field.id]}`)
+            }
+        });
+        return stateUpdate;
+    }
+
     clearData() {
         let stateUpdate = {
             success_message: '',
@@ -25,6 +39,7 @@ class BasicFormComponent extends Component {
             // set each field to default value
             stateUpdate[field.id] = ''
         });
+        stateUpdate = this.preUpdateState(stateUpdate);
         this.setState(stateUpdate);
     }
 
@@ -37,6 +52,7 @@ class BasicFormComponent extends Component {
         this.props.entityDef.fields.forEach(field => {
             stateUpdate[field.id] = record[field.id];
         });
+        this.preUpdateState(stateUpdate);
         this.setState(stateUpdate);
     }
 
@@ -98,12 +114,14 @@ class BasicFormComponent extends Component {
                 <div className='message error'>{this.state.error_message}</div>
                 <div className='message success'>{this.state.success_message}</div>
                 {this.contentFields().map(field =>
-                    <div key={this.props.entityDef.entity_type+'_form_'+field.id}>
-                        <label>{field.label}</label>
-                        <input type={field.html_input_type} name={field.id} defaultValue={this.state[field.id]}
-                          onChange={event => this.setState({ [field.id]: event.target.value })}
-                        /><br/>
-                    </div>
+                        (field.html_input_type ?
+                        <div key={this.props.entityDef.entity_type+'_form_'+field.id}>
+                            <label>{field.label}</label>
+                            <input type={field.html_input_type} name={field.id} defaultValue={this.state[field.id]}
+                              onChange={event => this.setState({ [field.id]: event.target.value })}
+                            /><br/>
+                        </div>
+                        : null)
                 )}
                 <input type="submit" value={`${this.state.isNew ? 'Create' : 'Edit'} ${this.props.entityDef.label}`} data-test="submit" />
                 <button onClick={this.buttonHandler(this.props.onCancel)}>Cancel</button>

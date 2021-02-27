@@ -1,4 +1,5 @@
 const roleDef = {
+    entity_type: 'role',
     label: 'Player Role Type',
     id_field: 'role_id',
     fields: [
