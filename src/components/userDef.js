@@ -2,7 +2,7 @@ const userDef = {
     entity_type: 'user',
     label: 'User',
     id_field: 'user_id',
-    label_field: 'email_address',
+    label_field: 'username',
     fields: [
         {
             id: 'user_id',
@@ -20,6 +20,12 @@ const userDef = {
             label: 'Password',
             html_input_type: 'password',
             table_display: false
+        },
+        {
+            id: 'username',
+            label: 'Username',
+            html_input_type: 'text',
+            table_display: true
         }
     ],
     endpoints: {
