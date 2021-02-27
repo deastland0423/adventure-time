@@ -1,6 +1,8 @@
 const locationDef = {
+    entity_type: 'location',
     label: 'Location',
     id_field: 'location_id',
+    label_field: 'name',
     fields: [
         {
             id: 'location_id',

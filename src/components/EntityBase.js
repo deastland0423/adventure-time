@@ -31,6 +31,24 @@ class EntityBaseComponent extends Component {
         return _fields;
     }
 
+    tableData() {
+        let tableData = this.state.records.map(row => {
+            this.props.entityDef.fields.forEach(field => {
+                if (field.entity_reference) {
+                    const refType = field.entity_reference.entity_type;
+                    const recordId = row[field.id];
+                    //TODO: look up reference
+                    row[field.id] = `${refType}#${recordId}.${refType}Def.label_field`;
+                    /*TODO: need a way to look up this record from context...
+                        get the record of refType with ID value row[field.id]
+                    */
+                }
+            });
+            return row;
+        })
+        return tableData;
+    }
+
     showForm() {
         this.formWrapperRef.current.classList.remove('hidden');
     }
@@ -127,7 +145,7 @@ class EntityBaseComponent extends Component {
                 <button ref={this.createButtonRef} onClick={this.showCreate}>New {this.props.entityDef.label}</button>
                 <Table
                     headers={this.tableFields()}
-                    getData={() => this.state.records}
+                    getData={() => this.tableData()}
                 />
             </div>
         );

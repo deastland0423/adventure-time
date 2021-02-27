@@ -1,6 +1,8 @@
 const userDef = {
+    entity_type: 'user',
     label: 'User',
     id_field: 'user_id',
+    label_field: 'email_address',
     fields: [
         {
             id: 'user_id',

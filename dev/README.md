@@ -20,4 +20,7 @@ You can access the app locally now at http://localhost:3000/
   If you see this, just run:
   `docker start mynode`
 
+  and then you can watch the 'yarn start' output with:
+  `docker logs -f mynode`
+
 * To get a shell inside the container (e.g. to run yarn commands), run: `docker exec -it mynode bash`

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import AppConfig from '../config';
+import { UserContext } from "../contexts/UserContext";
 
 class BasicFormComponent extends Component {
+    static contextType = UserContext;
     /**
      * Must specify entityDef in props
      */
@@ -15,6 +17,24 @@ class BasicFormComponent extends Component {
         this.clearData();
     }
 
+    /**
+     * Runs before setState() to update calculated or auto-assigned fields
+     */
+    preUpdateState(stateUpdate) {
+        this.props.entityDef.fields.forEach(field => {
+            if (field.auto_assign) {
+                let contextArg = null;
+                if ('context' in this && this.context && 'auth' in this.context && this.context.auth) {
+                    contextArg = {
+                        auth: this.context.auth
+                    }
+                }
+                stateUpdate[field.id] = field.auto_assign(contextArg)
+            }
+        });
+        return stateUpdate;
+    }
+
     clearData() {
         let stateUpdate = {
             success_message: '',
@@ -25,6 +45,7 @@ class BasicFormComponent extends Component {
             // set each field to default value
             stateUpdate[field.id] = ''
         });
+        stateUpdate = this.preUpdateState(stateUpdate);
         this.setState(stateUpdate);
     }
 
@@ -37,13 +58,14 @@ class BasicFormComponent extends Component {
         this.props.entityDef.fields.forEach(field => {
             stateUpdate[field.id] = record[field.id];
         });
+        this.preUpdateState(stateUpdate);
         this.setState(stateUpdate);
     }
 
     contentFields() {
         let contentFields = [];
         this.props.entityDef.fields.forEach(field => {
-            if(field.id != this.props.entityDef.id_field) {
+            if(field.id !== this.props.entityDef.id_field) {
                 contentFields.push(field);
             }
         });
@@ -98,12 +120,14 @@ class BasicFormComponent extends Component {
                 <div className='message error'>{this.state.error_message}</div>
                 <div className='message success'>{this.state.success_message}</div>
                 {this.contentFields().map(field =>
-                    <div>
-                        <label>{field.label}</label>
-                        <input type={field.html_input_type} name={field.id} defaultValue={this.state[field.id]}
-                          onChange={event => this.setState({ [field.id]: event.target.value })}
-                        /><br/>
-                    </div>
+                        (field.html_input_type ?
+                        <div key={this.props.entityDef.entity_type+'_form_'+field.id}>
+                            <label>{field.label}</label>
+                            <input type={field.html_input_type} name={field.id} defaultValue={this.state[field.id]}
+                              onChange={event => this.setState({ [field.id]: event.target.value })}
+                            /><br/>
+                        </div>
+                        : null)
                 )}
                 <input type="submit" value={`${this.state.isNew ? 'Create' : 'Edit'} ${this.props.entityDef.label}`} data-test="submit" />
                 <button onClick={this.buttonHandler(this.props.onCancel)}>Cancel</button>
