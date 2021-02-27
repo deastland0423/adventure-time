@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import AppConfig from '../config';
+import { UserContext } from "../contexts/UserContext";
 
 class BasicFormComponent extends Component {
+    static contextType = UserContext;
     /**
      * Must specify entityDef in props
      */
@@ -21,9 +23,13 @@ class BasicFormComponent extends Component {
     preUpdateState(stateUpdate) {
         this.props.entityDef.fields.forEach(field => {
             if (field.auto_assign) {
-                console.log(`triggering auto_assign for ${field.id}`)
-                stateUpdate[field.id] = field.auto_assign() //TODO(auto_assign): what context to pass in?
-                console.log(`auto_assign'ed value for ${field.id} = ${stateUpdate[field.id]}`)
+                let contextArg = null;
+                if ('context' in this && this.context && 'auth' in this.context && this.context.auth) {
+                    contextArg = {
+                        auth: this.context.auth
+                    }
+                }
+                stateUpdate[field.id] = field.auto_assign(contextArg)
             }
         });
         return stateUpdate;

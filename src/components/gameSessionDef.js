@@ -12,10 +12,13 @@ const entityDef = {
         {
             id: 'creator_dm_user_id',
             label: 'DM',
-            html_input_type: 'number',//false,    //TODO(auto_assign): restore 'false'
-            auto_assign: () => {
-                //TODO(auto_assign): define update function
-                return 24
+            html_input_type: false,
+            auto_assign: (context) => {
+                if (context && 'auth' in context && context.auth && 'user' in context.auth && context.auth.user) {
+                    return context.auth.user.user_id
+                } else {
+                    return null
+                }
             },
             entity_reference: {
                 entity_type: 'user'
