@@ -22,7 +22,7 @@ class BasicFormComponent extends Component {
      */
     preUpdateState(stateUpdate) {
         this.props.entityDef.fields.forEach(field => {
-            if (field.auto_assign) {
+            if (!this.state[field.id] && field.auto_assign) {
                 let contextArg = null;
                 if ('context' in this && this.context && 'auth' in this.context && this.context.auth) {
                     contextArg = {
@@ -60,6 +60,11 @@ class BasicFormComponent extends Component {
             isNew: false
         };
         this.props.entityDef.fields.forEach(field => {
+            if (field.html_input_type === "datetime-local") {
+                if (record[field.id].slice(-1) === 'Z') {
+                    record[field.id] = record[field.id].slice(0, -1)    // remove trailing Z
+                }
+            }
             stateUpdate[field.id] = record[field.id];
         });
         this.preUpdateState(stateUpdate);
@@ -127,9 +132,16 @@ class BasicFormComponent extends Component {
                         (field.html_input_type ?
                         <div key={this.props.entityDef.entity_type+'_form_'+field.id}>
                             <label>{field.label}</label>
-                            <input type={field.html_input_type} name={field.id} defaultValue={this.state[field.id]}
-                              onChange={event => this.setState({ [field.id]: event.target.value })}
-                            /><br/>
+                            {field.html_input_type === 'checkbox' ?
+                                <input type="checkbox" name={field.id} defaultChecked={this.state[field.id]}
+                                    onChange={event => this.setState({ [field.id]: event.target.checked ? 1 : 0 })}
+                                />
+                                  :
+                                <input type={field.html_input_type} name={field.id} defaultValue={this.state[field.id]}
+                                    onChange={event => this.setState({ [field.id]: event.target.value })}
+                                />
+                            }
+                            <br/>
                         </div>
                         : null)
                 )}

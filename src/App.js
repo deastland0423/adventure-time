@@ -34,7 +34,6 @@ function App() {
                           <Tab>Users</Tab>
                           <Tab>Locations</Tab>
                           <Tab>Sessions</Tab>
-                          <Tab>Roles</Tab>
                         </TabList>
 
                         <TabPanel>

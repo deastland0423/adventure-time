@@ -43,7 +43,7 @@ const entityDef = {
         {
             id: 'reserved',
             label: 'Reserved',
-            html_input_type: 'number',
+            html_input_type: 'checkbox',
             table_display: true
         }
     ],
