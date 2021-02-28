@@ -1,18 +1,35 @@
 import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom';
+import axios from 'axios';
 
 const Register = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [redirect, setRedirect] = useState(false);
 
     const submit = async (e) => {
         e.preventDefault();
-        console.log({
-            name,
-            email,
-            password
-        });
 
+        const url = 'https://xlxp3abvkg.execute-api.us-east-1.amazonaws.com/dev/users';
+        const payload = {
+            username: name,
+            email_address: email,
+            password: password
+        };
+
+        try {
+            await axios.post(url, payload);
+            setRedirect(true);
+            
+        } catch (err) {
+            alert("Error registering user: ", err);
+        }
+
+    }
+
+    if (redirect) {
+        return <Redirect to="/login" />
     }
 
     return(
