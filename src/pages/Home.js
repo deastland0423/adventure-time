@@ -22,7 +22,20 @@ const Home = () => {
                     </TabList>
 
                     <TabPanel>
-                    <h2>Coming Soon!</h2>
+                        <div>
+                            <h2>Coming Soon!</h2>
+                            <Tabs>
+                                <TabList>
+                                    <Tab>Local Map</Tab>
+                                    <Tab>World Map</Tab>
+                                </TabList>
+
+                                <TabPanel>
+                                    <h3>Northhold Hex</h3>
+                                    <img src="https://adventure-time-world-map.s3.amazonaws.com/Northhold.jpg" alt="new" />
+                                </TabPanel>
+                            </Tabs>
+                        </div>
                     </TabPanel>
                     <TabPanel>
                     <div>
