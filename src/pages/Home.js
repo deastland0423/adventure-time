@@ -7,13 +7,11 @@ import userDef from '../models/userDef';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import { UserProvider } from "../contexts/UserContext";
-import UserMenu from '../components/UserMenu';
 
 const Home = () => {
     return (
         <div>
             <UserProvider>
-                <UserMenu/>
                 <div className='App'>
                 <h1>Into The Unknown: Online Interface</h1>
 
