@@ -23,7 +23,6 @@ const Home = () => {
 
                     <TabPanel>
                         <div>
-                            <h2>Coming Soon!</h2>
                             <Tabs>
                                 <TabList>
                                     <Tab>Local Map</Tab>
@@ -33,6 +32,10 @@ const Home = () => {
                                 <TabPanel>
                                     <h3>Northhold Hex</h3>
                                     <img src="https://adventure-time-world-map.s3.amazonaws.com/Northhold.jpg" alt="new" />
+                                </TabPanel>
+                                <TabPanel>
+                                    <h3>World Map</h3>
+                                    <img src="https://adventure-time-world-map.s3.amazonaws.com/BigPlayerMap.JPG" alt="new" />
                                 </TabPanel>
                             </Tabs>
                         </div>
