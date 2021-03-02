@@ -19,7 +19,8 @@ const Login = () => {
             data: {
                 email_address: email,
                 password: password
-            }
+            },
+            withCredentials: true
         }
 
         try {
