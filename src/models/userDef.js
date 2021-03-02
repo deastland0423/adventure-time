@@ -29,6 +29,8 @@ const userDef = {
         }
     ],
     endpoints: {
+        update: '/user',
+        deleteOne: '/user',
         getMultipleByQuery: '/users',
         create: '/users'
     }

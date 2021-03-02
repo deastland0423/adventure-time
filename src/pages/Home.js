@@ -63,7 +63,7 @@ const Home = () => {
 
                             <TabPanel>
                                 <h3>Registered Players</h3>
-                                <EntityBase entityDef={userDef} />
+                                <EntityBase entityDef={userDef} includeOps={true} />
                             </TabPanel>
                             <TabPanel>
                                 <h3>Locations</h3>
