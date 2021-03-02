@@ -7,7 +7,8 @@ import Nav from './components/Nav';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Footer from './pages/Footer';
-
+import axios from 'axios';
+axios.defaults.withCredentials = true;
 
 function App() {
 
