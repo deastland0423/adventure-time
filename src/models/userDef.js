@@ -26,6 +26,11 @@ const userDef = {
             label: 'Username',
             html_input_type: 'text',
             table_display: true
+        },
+        {
+          id: 'roles',
+          label: 'Roles',
+          table_display: true
         }
     ],
     endpoints: {

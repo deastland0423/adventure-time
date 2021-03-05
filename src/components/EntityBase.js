@@ -44,6 +44,10 @@ class EntityBaseComponent extends Component {
                 if (field.html_input_type === 'checkbox') {
                     tableRow[field.id] === 1 ? tableRow[field.id] = 'YES' : tableRow[field.id] = 'NO';
                 }
+                // Join multi-value fields
+                if (Array.isArray (tableRow[field.id]) ) {
+                    tableRow[field.id] = tableRow[field.id].join(', ');
+                }
             });
             return tableRow;
         })
