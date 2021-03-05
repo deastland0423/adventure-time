@@ -1,9 +1,47 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useUserContext, logout } from "../contexts/UserContext";
+import { useUserContext, logout, loginSuccess } from "../contexts/UserContext";
+import axios from 'axios';
+import AppConfig from '../config';
 
 const Nav = () => {
     const { auth, dispatch } = useUserContext();
+    useEffect(() => {
+      // On first page load, check to see if our login cookie is still good.
+      const url = `${AppConfig.backend_host}/login`;
+      const config = {
+          method: 'get',
+          url: url,
+          withCredentials: true
+      }
+      axios(config).then((response) => {
+        console.log('getLogin response: ', response.data);
+          dispatch(loginSuccess(response.data.user));
+        })
+      .catch((err) => {
+        console.log("getLogin error",err);
+      });
+    }, []);
+
+    const handleLogout = async (e) => {
+        e.preventDefault();
+        // Send logout to BE
+        const url = `${AppConfig.backend_host}/logout`;
+        const config = {
+            method: 'post',
+            url: url,
+            withCredentials: true
+        }
+        try {
+            const response = await axios(config);
+            console.log('Logout response: ', response.data);
+            // Handle UI logout
+            dispatch(logout());
+        } catch (err) {
+            console.log("Logout failed",err)
+        }
+    }
+
     return (
         <nav className="navbar navbar-expand-md navbar-dark bg-dark mb-4">
             <div className="container-fluid">
@@ -16,7 +54,7 @@ const Nav = () => {
                             <a className="nav-link" href="#"><nobr>👤 {auth.user.username}</nobr></a>
                         </li>
                         <li className="nav-item">
-                            <a href="#" onClick={(e) => {e.preventDefault(); dispatch(logout());}} className="nav-link">Logout</a>
+                            <a href="#" onClick={handleLogout} className="nav-link">Logout</a>
                         </li>
                     </ul>
                     :

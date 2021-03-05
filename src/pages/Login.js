@@ -31,7 +31,7 @@ const Login = () => {
         try {
             const response = await axios(config);
             console.log('Login response: ', response.data);
-            dispatch(loginSuccess(response.data));
+            dispatch(loginSuccess(response.data.user));
             setRedirect(true);
         } catch (err) {
             alert("Bad signin attempt: ", err);
