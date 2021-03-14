@@ -17,13 +17,25 @@ const adventureDef = {
         },
         {
             id: 'session_id',
-            label: 'Session ID',
-            html_input_type: 'number',
-            table_display: false
+            label: 'Session',
+            html_input_type: 'select',
+            table_display: false,
+            getOptionsQueryDef: (userContext) => {
+                let queryParams = {};
+                //TODO(authorization): if user is NOT admin, load only available sessions : get /sessions/available WHERE reserved = 0
+                //if (!userContext.hasRole('ADMIN')) {
+                //queryParams = {reserved: false}
+                //}
+                return {
+                    entity_type: 'session',
+                    endpoint: 'getMultipleByQuery',
+                    queryParams: queryParams
+                }
+            }
         },
         {
             id: 'location_id',
-            label: 'Location ID',
+            label: 'Location',
             html_input_type: 'number',
             table_display: false
         },

@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import constants from '../utils/constants';
 import AppConfig from '../config';
+import { ResourceProvider } from "../contexts/ResourceContext";
 import { UserContext } from "../contexts/UserContext";
 const { safeGetProp } = require('../utils/data_access');
 
 class BasicFormComponent extends Component {
-    static contextType = UserContext;
     /**
      * Must specify entityDef in props
      */
@@ -17,6 +17,35 @@ class BasicFormComponent extends Component {
             error_message: ''
         }
         this.clearData();
+
+        // SECTION: Check entityDef and initialize options where needed
+        this.state.options = {};
+        // in constructor, initialize all options as empty
+        this.props.entityDef.fields.forEach(field => {
+            if (field.html_input_type === 'select') {
+                this.state.options[field.id] = [];
+            }
+        });
+        // send async calls to populate the options values
+        this.props.entityDef.fields.forEach(field => {
+            if (field.html_input_type === 'select') {
+                const optionsQuery = field.getOptionsQueryDef(this.props.userContext);
+                const resHandler = this.props.resourceContext.resource.handlers[optionsQuery.entity_type]
+                const fieldOptions = resHandler.callApi(optionsQuery.endpoint, optionsQuery.queryParams)
+                .then(response => {
+                    const options = response.data.map(row => {
+                        return {
+                            id: row.session_id,
+                            label: `${row.start_time} for ${row.duration} min`  //TODO: improve formatting, maybe use entityDef.field_label ?
+                        };
+                    });
+                    this.state.options[field.id] = options;
+                })
+                .catch(err => {
+                    console.log(`Error getting options for ${field.id}: ${err}`);
+                });
+            }
+        });
     }
 
     /**
@@ -34,6 +63,7 @@ class BasicFormComponent extends Component {
         return stateUpdate;
     }
 
+    // Clear the data in the form.
     clearData() {
         let stateUpdate = {
             success_message: '',
@@ -52,6 +82,7 @@ class BasicFormComponent extends Component {
         this.setState(stateUpdate);
     }
 
+    // Load data from the given record into the form.
     loadData(record) {
         if (!record) return
         let stateUpdate = {
@@ -163,9 +194,21 @@ class BasicFormComponent extends Component {
                                     onChange={event => this.setState({ [field.id]: event.target.checked ? true : false })}
                                 />
                                   :
-                                <input type={field.html_input_type} name={field.id} defaultValue={this.state[field.id]}
-                                    onChange={event => this.setState({ [field.id]: event.target.value })}
-                                />
+                                (field.html_input_type === 'select' ?
+                                    <select name={field.id}
+                                        onChange={event => {this.setState({ [field.id]: event.target.options[event.target.options.selectedIndex].value }) }  }
+                                    >
+                                        {this.state.options[field.id].map(option =>
+                                            <option key={`${field.id}_${option.id}`} value={option.id}
+                                                selected={this.state[field.id] == option.id ? "selected" : null}
+                                            >{option.label}</option>
+                                        )}
+                                    </select>
+                                :
+                                    <input type={field.html_input_type} name={field.id} defaultValue={this.state[field.id]}
+                                        onChange={event => this.setState({ [field.id]: event.target.value })}
+                                    />
+                                )
                             }
                             <br/>
                         </div>
@@ -180,5 +223,6 @@ class BasicFormComponent extends Component {
         );
     }
 }
+
 
 export default BasicFormComponent;
