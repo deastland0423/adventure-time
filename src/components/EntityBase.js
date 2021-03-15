@@ -100,8 +100,8 @@ class EntityBaseComponent extends Component {
                 this.refreshTableData();
               })
             .catch( error => {
-                //this.setState( { error_message: error.response.data, success_message: '' } );
-                console.log("error deleted record:",error)
+                console.log("error deleting record",error.response.data)
+                alert("Error deleting record: " + error.response.data)
             })
         ;
     }
