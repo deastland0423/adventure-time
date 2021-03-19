@@ -3,6 +3,19 @@ import constants from '../utils/constants';
 
 export const UserContext = createContext();
 
+export function userHasRole(user, roles) {
+    if (!user) {
+        return false;
+    }
+    if (!('roles' in user)) {
+      user.roles = []
+    }
+    if (typeof roles === 'string') {
+        roles = [roles]
+    }
+    return roles.some(role => user.roles.includes(role));
+}
+
 // Initial state
 const initialState = {
   isLoggedIn: false,

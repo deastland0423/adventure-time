@@ -1,4 +1,5 @@
 import React from 'react';
+import { useUserContext, userHasRole } from "../contexts/UserContext";
 import EntityBase from '../components/EntityBase';
 import sessionDef from '../models/sessionDef';
 import locationDef from '../models/locationDef';
@@ -9,6 +10,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 
 const Home = () => {
+    const { auth } = useUserContext();
     return (
         <div className='App'>
             <div style={{ backgroundImage: `url("https://cdn.shopify.com/s/files/1/0017/2330/1933/articles/Old-School_Essentials_Classic_Fantasy_Referee_s_Screen_Art_Panels_6f4d7f60-662a-43ef-bbcb-b040b748e7dd_1200x1200.jpg")`}}>
@@ -17,66 +19,88 @@ const Home = () => {
 
             <Tabs>
                 <TabList>
-                    <Tab>Players</Tab>
-                    <Tab>Admin</Tab>
+                    {userHasRole(auth.user, 'PLAYER') ?
+                        <Tab>Players</Tab>
+                    : null}
+                    {userHasRole(auth.user, ['DM', 'ADMIN']) ?
+                        <Tab>DM</Tab>
+                    : null}
+                    {userHasRole(auth.user, 'ADMIN') ?
+                        <Tab>Admin</Tab>
+                    : null}
                 </TabList>
 
-                <TabPanel>
+                {userHasRole(auth.user, 'PLAYER') ?
+                    <TabPanel>
+                        <div>
+                            <Tabs>
+                                <TabList>
+                                <Tab>Character Management</Tab>
+                                    <Tab>Local Map</Tab>
+                                    <Tab>World Map</Tab>
+                                    <Tab>Adventures</Tab>
+                                </TabList>
+                                <TabPanel>
+                                    <h3>Your Characters</h3>
+                                    <EntityBase entityDef={characterDef} includeOps={false} />
+                                </TabPanel>
+                                <TabPanel>
+                                    <h3>Northhold Hex</h3>
+                                    <div id="picture-scroll">
+                                        <img src="https://adventure-time-world-map.s3.amazonaws.com/Northhold.jpg" alt="new" />
+                                    </div>
+                                </TabPanel>
+                                <TabPanel>
+                                <div id="picture-scroll">
+                                    <h3>World Map</h3>
+                                    <img src="https://adventure-time-world-map.s3.amazonaws.com/BigPlayerMap.JPG" alt="new" />
+                                </div>
+                                </TabPanel>
+                                <TabPanel>
+                                    <h3>Calls to Adventure</h3>
+                                    <EntityBase entityDef={adventureDef} includeOps={true} />
+                                </TabPanel>
+                            </Tabs>
+                        </div>
+                    </TabPanel>
+                : null}
+                {['DM', 'ADMIN'].some((role) => userHasRole(auth.user, role)) ?
+                    <TabPanel>
+                        <div>
+                            <Tabs>
+                                <TabList>
+                                    <Tab>Locations</Tab>
+                                    <Tab>Sessions</Tab>
+                                </TabList>
+
+                                <TabPanel>
+                                    <h3>Locations</h3>
+                                    <EntityBase entityDef={locationDef} includeOps={true} />
+                                </TabPanel>
+                                <TabPanel>
+                                    <h3>Game Sessions</h3>
+                                    <EntityBase entityDef={sessionDef} includeOps={true} />
+                                </TabPanel>
+                            </Tabs>
+                        </div>
+                    </TabPanel>
+                : null}
+                {userHasRole(auth.user, 'ADMIN') ?
+                    <TabPanel>
                     <div>
                         <Tabs>
                             <TabList>
-                            <Tab>Character Management</Tab>
-                                <Tab>Local Map</Tab>
-                                <Tab>World Map</Tab>
+                                <Tab>Users</Tab>
                             </TabList>
+
                             <TabPanel>
-                                <h3>Your Characters</h3>
-                                <EntityBase entityDef={characterDef} includeOps={false} />
-                            </TabPanel>
-                            <TabPanel>
-                                <h3>Northhold Hex</h3>
-                                <div id="picture-scroll">
-                                    <img src="https://adventure-time-world-map.s3.amazonaws.com/Northhold.jpg" alt="new" /> 
-                                </div>
-                            </TabPanel>
-                            <TabPanel>
-                            <div id="picture-scroll">
-                                <h3>World Map</h3>
-                                <img src="https://adventure-time-world-map.s3.amazonaws.com/BigPlayerMap.JPG" alt="new" />
-                            </div>
+                                <h3>Registered Players</h3>
+                                <EntityBase entityDef={userDef} includeOps={true} />
                             </TabPanel>
                         </Tabs>
                     </div>
-                </TabPanel>
-                <TabPanel>
-                <div>
-                    <Tabs>
-                        <TabList>
-                            <Tab>Users</Tab>
-                            <Tab>Locations</Tab>
-                            <Tab>Sessions</Tab>
-                            <Tab>Adventures</Tab>
-                        </TabList>
-
-                        <TabPanel>
-                            <h3>Registered Players</h3>
-                            <EntityBase entityDef={userDef} includeOps={true} />
-                        </TabPanel>
-                        <TabPanel>
-                            <h3>Locations</h3>
-                            <EntityBase entityDef={locationDef} includeOps={true} />
-                        </TabPanel>
-                        <TabPanel>
-                            <h3>Game Sessions</h3>
-                            <EntityBase entityDef={sessionDef} includeOps={true} />
-                        </TabPanel>
-                        <TabPanel>
-                            <h3>Calls to Adventure</h3>
-                            <EntityBase entityDef={adventureDef} includeOps={true} />
-                        </TabPanel>
-                    </Tabs>
-                </div>
-                </TabPanel>
+                    </TabPanel>
+                : null}
             </Tabs>
         </div>
     );
