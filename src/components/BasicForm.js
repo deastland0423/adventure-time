@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import AppConfig from '../config';
 import { UserContext } from "../contexts/UserContext";
+const { safeGetProp } = require('../utils/data_access');
 
 class BasicFormComponent extends Component {
     static contextType = UserContext;
@@ -23,12 +24,9 @@ class BasicFormComponent extends Component {
     preUpdateState(stateUpdate) {
         this.props.entityDef.fields.forEach(field => {
             if (!stateUpdate[field.id] && field.auto_assign) {
-                let contextArg = null;
-                if ('context' in this && this.context && 'auth' in this.context && this.context.auth) {
-                    contextArg = {
-                        auth: this.context.auth
-                    }
-                }
+                let contextArg = {};
+                contextArg.auth = safeGetProp(this, ['context', 'auth']);
+                contextArg.record = stateUpdate;
                 stateUpdate[field.id] = field.auto_assign(contextArg)
             }
         });
@@ -67,7 +65,7 @@ class BasicFormComponent extends Component {
             }
             stateUpdate[field.id] = record[field.id];
         });
-        this.preUpdateState(stateUpdate);
+        stateUpdate = this.preUpdateState(stateUpdate);
         this.setState(stateUpdate);
     }
 
@@ -130,11 +128,11 @@ class BasicFormComponent extends Component {
                 <div className='message success'>{this.state.success_message}</div>
                 {this.contentFields().map(field =>
                         (field.html_input_type ?
-                        <div key={this.props.entityDef.entity_type+'_form_'+field.id}>
-                            <label>{field.label}</label>
+                        <div key={this.props.entityDef.entity_type+'_form_'+field.id+'_'+this.state[field.id]}>
+                            <label htmlFor={field.id}>{field.label}</label>
                             {field.html_input_type === 'checkbox' ?
-                                <input type="checkbox" name={field.id} defaultChecked={this.state[field.id]}
-                                    onChange={event => this.setState({ [field.id]: event.target.checked ? 1 : 0 })}
+                                <input type="checkbox" id={field.id} name={field.id} defaultChecked={this.state[field.id]}
+                                    onChange={event => this.setState({ [field.id]: event.target.checked ? true : false })}
                                 />
                                   :
                                 <input type={field.html_input_type} name={field.id} defaultValue={this.state[field.id]}

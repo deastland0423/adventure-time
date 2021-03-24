@@ -1,3 +1,5 @@
+const { safeGetProp } = require('../utils/data_access');
+
 const userDef = {
     entity_type: 'user',
     label: 'User',
@@ -26,6 +28,27 @@ const userDef = {
             label: 'Username',
             html_input_type: 'text',
             table_display: true
+        },
+        {
+            id: 'is_player',
+            label: 'Player',
+            html_input_type: 'checkbox',
+            auto_assign: (context) => (safeGetProp(context, ['record', 'roles']) || []).includes('PLAYER'),
+            table_display: false
+        },
+        {
+            id: 'is_dm',
+            label: 'DM',
+            html_input_type: 'checkbox',
+            auto_assign: (context) => (safeGetProp(context, ['record', 'roles']) || []).includes('DM'),
+            table_display: false
+        },
+        {
+            id: 'is_admin',
+            label: 'Admin',
+            html_input_type: 'checkbox',
+            auto_assign: (context) => (safeGetProp(context, ['record', 'roles']) || []).includes('ADMIN'),
+            table_display: false
         },
         {
           id: 'roles',

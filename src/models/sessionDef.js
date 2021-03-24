@@ -1,3 +1,5 @@
+const { safeGetProp } = require('../utils/data_access');
+
 const entityDef = {
     entity_type: 'session',
     label: 'Session',
@@ -13,13 +15,7 @@ const entityDef = {
             id: 'host_user_id',
             label: 'DM/Host',
             html_input_type: 'number',  //TODO:change this to a drop-down based on reference to user table
-            auto_assign: (context) => {
-                if (context && 'auth' in context && context.auth && 'user' in context.auth && context.auth.user) {
-                    return context.auth.user.user_id
-                } else {
-                    return null
-                }
-            },
+            auto_assign: (context) => safeGetProp(context, ['auth', 'user', 'user_id']),
             table_display: 'username'
         },
         {
