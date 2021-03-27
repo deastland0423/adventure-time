@@ -121,6 +121,14 @@ class BasicFormComponent extends Component {
     }
 
 
+    getFieldKey(field) {
+      let key = this.props.entityDef.entity_type+'_form_'+field.id;
+      if (field.html_input_type === 'checkbox') {
+        key = key+'_'+this.state[field.id];
+      }
+      return key;
+    }
+
     render() {
         return(
             <form onSubmit={this.handleSubmit}>
@@ -128,7 +136,7 @@ class BasicFormComponent extends Component {
                 <div className='message success'>{this.state.success_message}</div>
                 {this.contentFields().map(field =>
                         (field.html_input_type ?
-                        <div key={this.props.entityDef.entity_type+'_form_'+field.id+'_'+this.state[field.id]}>
+                        <div key={this.getFieldKey(field)}>
                             <label htmlFor={field.id}>{field.label}</label>
                             {field.html_input_type === 'checkbox' ?
                                 <input type="checkbox" id={field.id} name={field.id} defaultChecked={this.state[field.id]}
