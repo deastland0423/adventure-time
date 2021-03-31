@@ -1,3 +1,5 @@
+const { safeGetProp } = require('../utils/data_access');
+
 const characterDef = {
     entity_type: 'character',
     label: 'Character',
@@ -43,6 +45,12 @@ const characterDef = {
             label: 'Home Base',
             html_input_type: 'number',
             table_display: true
+        },
+        {
+            id: 'owner_user_id',
+            label: 'User',
+            auto_assign: (context) => safeGetProp(context, ['auth', 'user', 'user_id']),
+            table_display: false
         }
     ],
     endpoints: {
