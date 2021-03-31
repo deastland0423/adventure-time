@@ -1,4 +1,5 @@
 import React from 'react';
+import constants from '../utils/constants';
 import { useUserContext, userHasRole } from "../contexts/UserContext";
 import EntityBase from '../components/EntityBase';
 import sessionDef from '../models/sessionDef';
@@ -19,18 +20,18 @@ const Home = () => {
 
             <Tabs>
                 <TabList>
-                    {userHasRole(auth.user, 'PLAYER') ?
+                    {constants.DEBUG_PERMS || userHasRole(auth.user, 'PLAYER') ?
                         <Tab>Players</Tab>
                     : null}
-                    {userHasRole(auth.user, ['DM', 'ADMIN']) ?
+                    {constants.DEBUG_PERMS || userHasRole(auth.user, ['DM', 'ADMIN']) ?
                         <Tab>DM</Tab>
                     : null}
-                    {userHasRole(auth.user, 'ADMIN') ?
+                    {constants.DEBUG_PERMS || userHasRole(auth.user, 'ADMIN') ?
                         <Tab>Admin</Tab>
                     : null}
                 </TabList>
 
-                {userHasRole(auth.user, 'PLAYER') ?
+                {constants.DEBUG_PERMS || userHasRole(auth.user, 'PLAYER') ?
                     <TabPanel>
                         <div>
                             <Tabs>
@@ -64,7 +65,7 @@ const Home = () => {
                         </div>
                     </TabPanel>
                 : null}
-                {['DM', 'ADMIN'].some((role) => userHasRole(auth.user, role)) ?
+                {constants.DEBUG_PERMS || ['DM', 'ADMIN'].some((role) => userHasRole(auth.user, role)) ?
                     <TabPanel>
                         <div>
                             <Tabs>
@@ -85,7 +86,7 @@ const Home = () => {
                         </div>
                     </TabPanel>
                 : null}
-                {userHasRole(auth.user, 'ADMIN') ?
+                {constants.DEBUG_PERMS || userHasRole(auth.user, 'ADMIN') ?
                     <TabPanel>
                     <div>
                         <Tabs>

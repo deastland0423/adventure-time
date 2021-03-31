@@ -33,6 +33,7 @@ const userDef = {
             id: 'is_player',
             label: 'Player',
             html_input_type: 'checkbox',
+            editAccess: (req) => safeGetProp(req, ['locals', 'currentUser', 'roles'], []).includes('ADMIN'),   // Only admin can edit roles
             auto_assign: (context) => (safeGetProp(context, ['record', 'roles']) || []).includes('PLAYER'),
             table_display: false
         },
@@ -40,6 +41,7 @@ const userDef = {
             id: 'is_dm',
             label: 'DM',
             html_input_type: 'checkbox',
+            editAccess: (req) => safeGetProp(req, ['locals', 'currentUser', 'roles'], []).includes('ADMIN'),   // Only admin can edit roles
             auto_assign: (context) => (safeGetProp(context, ['record', 'roles']) || []).includes('DM'),
             table_display: false
         },
@@ -47,6 +49,7 @@ const userDef = {
             id: 'is_admin',
             label: 'Admin',
             html_input_type: 'checkbox',
+            editAccess: (req) => safeGetProp(req, ['locals', 'currentUser', 'roles'], []).includes('ADMIN'),   // Only admin can edit roles
             auto_assign: (context) => (safeGetProp(context, ['record', 'roles']) || []).includes('ADMIN'),
             table_display: false
         },

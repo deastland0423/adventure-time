@@ -126,3 +126,10 @@
   overflow: scroll;
   white-space: nowrap;
 }
+
+#my-account.outer {
+    text-align: center;
+}
+#my-account .inner {
+    display: inline-block;
+}

@@ -3,8 +3,12 @@ import axios from 'axios';
 import AppConfig from '../config';
 import Table from './Table';
 import BasicForm from './BasicForm';
+import { UserContext, curUserCan } from "../contexts/UserContext";
+const { safeGetProp } = require('../utils/data_access');
+
 
 class EntityBaseComponent extends Component {
+  static contextType = UserContext;
     /**
      * Must specify entityDef in props
      */
@@ -65,12 +69,16 @@ class EntityBaseComponent extends Component {
     showCreate = () => {
         this.formRef.current.clearData();
         this.showForm()
-        this.createButtonRef.current.classList.add('hidden');
+        if (this.createButtonRef.current) {
+            this.createButtonRef.current.classList.add('hidden');
+        }
     }
 
     hideCreate = () => {
         this.hideForm()
-        this.createButtonRef.current.classList.remove('hidden');
+        if (this.createButtonRef.current) {
+            this.createButtonRef.current.classList.remove('hidden');
+        }
     }
 
     getRecord(record_id) {
@@ -88,7 +96,9 @@ class EntityBaseComponent extends Component {
         const recordData = this.getRecord(record_id);
         this.formRef.current.loadData(recordData);
         this.showForm()
-        this.createButtonRef.current.classList.remove('hidden');
+        if (this.createButtonRef.current) {
+          this.createButtonRef.current.classList.remove('hidden');
+        }
     }
 
     doDelete(record_id) {
@@ -124,8 +134,14 @@ class EntityBaseComponent extends Component {
                     row.id = row[this.props.entityDef.id_field];
                     row.__OPERATIONS = (
                         <div>
-                            <button onClick={() => this.doDelete(row.id)}>delete</button>
-                            <button onClick={() => this.showEdit(row.id)}>edit</button>
+                            {curUserCan(safeGetProp(this, ['context', 'auth']), 'DELETE', this.props.entityDef.endpoints.deleteOne+'/'+row.id) ?
+                              <button onClick={() => this.doDelete(row.id)}>delete</button>
+                              : null
+                            }
+                            {curUserCan(safeGetProp(this, ['context', 'auth']), 'PUT', this.props.entityDef.endpoints.update+'/'+row.id) ?
+                              <button onClick={() => this.showEdit(row.id)}>edit</button>
+                              : null
+                            }
                         </div>
                     )
                     return row
@@ -147,7 +163,10 @@ class EntityBaseComponent extends Component {
                         onCancel={this.hideCreate}
                     />
                 </div>
-                <button ref={this.createButtonRef} onClick={this.showCreate}>New {this.props.entityDef.label}</button>
+                {curUserCan(safeGetProp(this, ['context', 'auth']), 'POST', this.props.entityDef.endpoints.create) ?
+                    <button ref={this.createButtonRef} onClick={this.showCreate}>New {this.props.entityDef.label}</button>
+                  : null
+                }
                 <Table
                     headers={this.tableFields()}
                     getData={() => this.tableData()}

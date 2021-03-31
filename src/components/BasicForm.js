@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import constants from '../utils/constants';
 import AppConfig from '../config';
 import { UserContext } from "../contexts/UserContext";
 const { safeGetProp } = require('../utils/data_access');
@@ -52,6 +53,7 @@ class BasicFormComponent extends Component {
     }
 
     loadData(record) {
+        if (!record) return
         let stateUpdate = {
             success_message: '',
             error_message: '',
@@ -63,7 +65,9 @@ class BasicFormComponent extends Component {
                     record[field.id] = record[field.id].slice(0, -1)    // remove trailing Z
                 }
             }
-            stateUpdate[field.id] = record[field.id];
+            if (field.id in record) {
+              stateUpdate[field.id] = record[field.id];
+            }
         });
         stateUpdate = this.preUpdateState(stateUpdate);
         this.setState(stateUpdate);
@@ -79,6 +83,20 @@ class BasicFormComponent extends Component {
         return contentFields;
     }
 
+    canEditField(field) {
+      if ('editAccess' in field && field.editAccess) {
+        const req = {
+          locals: {
+            currentUser: safeGetProp(this, ['context', 'auth', 'user'])
+          }
+        };
+        return field.editAccess(req);
+      } else {
+        // if no editAccess function then assume field is editable
+        return true;
+      }
+    }
+
     handleSubmit = async (event) => {
         event.preventDefault();
         if (this.state.isNew) {
@@ -87,6 +105,7 @@ class BasicFormComponent extends Component {
                 .post(createUrl, this.state)
                 .then( response => {
                     this.setState( { success_message: response.data, error_message: '' } );
+                    setTimeout(() => this.setState({success_message:''}), constants.AUTOHIDE_SUCCESS_MESSAGES_SEC*1000);
                     this.props.onComplete();
                 })
                 .catch( error => {
@@ -99,6 +118,7 @@ class BasicFormComponent extends Component {
                 .put(updateUrl, this.state)
                 .then( response => {
                     this.setState( { success_message: response.data, error_message: '' } );
+                    setTimeout(() => this.setState({success_message:''}), constants.AUTOHIDE_SUCCESS_MESSAGES_SEC*1000);
                     this.props.onComplete();
                 })
                 .catch( error => {
@@ -135,7 +155,7 @@ class BasicFormComponent extends Component {
                 <div className='message error'>{this.state.error_message}</div>
                 <div className='message success'>{this.state.success_message}</div>
                 {this.contentFields().map(field =>
-                        (field.html_input_type ?
+                        (field.html_input_type && this.canEditField(field) ?
                         <div key={this.getFieldKey(field)}>
                             <label htmlFor={field.id}>{field.label}</label>
                             {field.html_input_type === 'checkbox' ?
@@ -152,7 +172,10 @@ class BasicFormComponent extends Component {
                         : null)
                 )}
                 <input type="submit" value={`${this.state.isNew ? 'Create' : 'Save'} ${this.props.entityDef.label}`} data-test="submit" />
-                <button onClick={this.buttonHandler(this.props.onCancel)}>Cancel</button>
+                {this.props.onCancel ?
+                  <button onClick={this.buttonHandler(this.props.onCancel)}>Cancel</button>
+                  : null
+                }
             </form>
         );
     }

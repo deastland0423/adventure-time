@@ -16,8 +16,42 @@ export function userHasRole(user, roles) {
     return roles.some(role => user.roles.includes(role));
 }
 
+export function curUserCan(auth, reqMethod, reqUrl) {
+  const { safeGetProp } = require('../utils/data_access');  // required by access check rules from BE
+  let result;
+  Object.entries(auth.accessRules).every(([endpointSig, accessCheck]) => {
+    const [method, url] = endpointSig.split(' ');
+    let matches = [];
+    //console.log(`checking reqUrl ${reqUrl} against endpoint url ${url}`)
+    if (reqMethod === method && (matches = reqUrl.match(new RegExp('^'+url)))) {
+      const req = {
+        locals: {
+          routeParams: matches.slice(1),
+          currentUser: auth.user,
+          safeGetProp: safeGetProp
+        }
+      }
+      //console.log(`AUTH DEBUG: found match, accessCheckFn: `,accessCheck)
+      const accessResult = accessCheck(req);
+      //console.log(`AUTH DEBUG: accessCheck result: `,accessResult)
+      result = accessResult;
+      return false; // break out of .every() loop
+    }
+    return true; //no match found yet, keep checking
+  });
+  if (typeof result !== 'undefined') {
+    //console.log(`AUTH DEBUG: returning accessCheck result: `,result)
+    return result;
+  } else {
+    // No route match, assume unrestricted.
+    console.log(`DEBUG: No route match for ${reqMethod} ${reqUrl}`);
+    return true;
+  }
+}
+
 // Initial state
 const initialState = {
+  accessRules: {},
   isLoggedIn: false,
   user: null,
   error: null
@@ -36,6 +70,10 @@ export function logout() {
   return { type: constants.LOGOUT };
 }
 
+export function setAccessRules(accessRules) {
+  return { type: constants.SET_ACCESS_RULES, accessRules };
+}
+
 // Reducer
 export const authReducer = (state, action) => {
   switch (action.type) {
@@ -45,6 +83,8 @@ export const authReducer = (state, action) => {
       return { ...state, isLoggedIn: false, user: null, error: action.error };
     case constants.LOGOUT:
       return { ...state, isLoggedIn: false, user: null, error: null };
+    case constants.SET_ACCESS_RULES:
+      return { ...state, accessRules: action.accessRules };
     default:
       return state;
   }
