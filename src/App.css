@@ -58,6 +58,18 @@
   padding: 5;
 }
 
+.button-as-a {
+    background: none!important;
+    border: none;
+    padding: 0;
+    color: #069;
+    cursor: pointer;
+}
+
+.button-as-a.nav-link {
+    padding: 8px;
+}
+
 .hidden {
   display: none;
 }

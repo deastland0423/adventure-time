@@ -23,10 +23,11 @@ const Nav = () => {
       // Also, load up access rules from BE.
       axios.get(`${AppConfig.backend_host}/access-rules`).then((response) => {
         let accessRules = response.data;
-        Object.keys(accessRules).map(route => {
+        Object.keys(accessRules).forEach(route => {
           if (accessRules[route].startsWith('(req) => ')) {
             const functionAsString = accessRules[route].slice('(req) => '.length);
             const functionBody = 'return '+functionAsString;
+            // eslint-disable-next-line no-new-func
             accessRules[route] = new Function('req', functionBody);
           } else {
             console.log("ERROR: Could not parse function body from: ",accessRules[route]);
@@ -37,6 +38,7 @@ const Nav = () => {
       .catch((err) => {
         console.log("Couldn't load access-rules:",err);
       });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleLogout = async (e) => {
@@ -70,7 +72,7 @@ const Nav = () => {
                             <Link to="/my-account" className="nav-link"><nobr>👤 {auth.user.username}</nobr></Link>
                         </li>
                         <li className="nav-item">
-                            <a href="#" onClick={handleLogout} className="nav-link">Logout</a>
+                            <button onClick={handleLogout} className="nav-link button-as-a">Logout</button>
                         </li>
                     </ul>
                     :
