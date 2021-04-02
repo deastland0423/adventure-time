@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import constants from '../utils/constants';
 import AppConfig from '../config';
-import { ResourceProvider } from "../contexts/ResourceContext";
-import { UserContext } from "../contexts/UserContext";
 const { safeGetProp } = require('../utils/data_access');
 
 class BasicFormComponent extends Component {
@@ -13,32 +11,44 @@ class BasicFormComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            options: {},
             success_message: '',
             error_message: ''
         }
         this.clearData();
 
         // SECTION: Check entityDef and initialize options where needed
-        this.state.options = {};
         // in constructor, initialize all options as empty
-        this.props.entityDef.fields.forEach(field => {
-            if (field.html_input_type === 'select') {
-                this.state.options[field.id] = [];
-            }
-        });
+        this.initializeOptions();
         // send async calls to populate the options values
+        this.getOptionsAsync();
+    }
+
+    /**
+     * Initializes options data structures as blank, runs synchronously during constructor.
+     */
+    initializeOptions() {
+        let initOptions = {};
+        for (let i=0; i++; i<this.props.entityDef.fields.length) {
+            const field = this.props.entityDef.fields[i];
+            if (field.html_input_type === 'select') {
+                initOptions[field.id] = [];
+            }
+        }
+        this.setState({options: initOptions});
+    }
+
+    /**
+     * Gets actual options values via async network call.
+     */
+    getOptionsAsync() {
         this.props.entityDef.fields.forEach(field => {
             if (field.html_input_type === 'select') {
-                const optionsQuery = field.getOptionsQueryDef(this.props.userContext);
-                const resHandler = this.props.resourceContext.resource.handlers[optionsQuery.entity_type]
-                const fieldOptions = resHandler.callApi(optionsQuery.endpoint, optionsQuery.queryParams)
-                .then(response => {
-                    const options = response.data.map(row => {
-                        return {
-                            id: row.session_id,
-                            label: `${row.start_time} for ${row.duration} min`  //TODO: improve formatting, maybe use entityDef.field_label ?
-                        };
-                    });
+                const context = {
+                    auth: this.props.userContext,
+                    resourceContext: this.props.resourceContext
+                };
+                field.getOptionsAsync(context).then(options => {
                     this.state.options[field.id] = options;
                 })
                 .catch(err => {
@@ -196,11 +206,11 @@ class BasicFormComponent extends Component {
                                   :
                                 (field.html_input_type === 'select' ?
                                     <select name={field.id}
-                                        onChange={event => {this.setState({ [field.id]: event.target.options[event.target.options.selectedIndex].value }) }  }
+                                    onChange={event => this.setState({ [field.id]: event.target.options[event.target.options.selectedIndex].value }) }
                                     >
-                                        {this.state.options[field.id].map(option =>
+                                        {safeGetProp(this.state.options, [field.id], []).map(option =>
                                             <option key={`${field.id}_${option.id}`} value={option.id}
-                                                selected={this.state[field.id] == option.id ? "selected" : null}
+                                                selected={this.state[field.id] == option.id ? "selected" : null /* eslint-disable-line eqeqeq */}
                                             >{option.label}</option>
                                         )}
                                     </select>

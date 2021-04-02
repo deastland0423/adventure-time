@@ -7,6 +7,17 @@ class EntityHandler {
         this.entityDef = entityDef;
     }
 
+    getLabel(record) {
+        // If there's a callback defined, use that.
+        if ('getLabel' in this.entityDef && this.entityDef.getLabel) {
+            return this.entityDef.getLabel(record);
+        }
+        // Otherwise just use the label field
+        else {
+            return record[this.entityDef.label_field];
+        }
+    }
+
     callApi(endpoint, queryParams = {}) {
         //TODO: all the validations
         let url = `${AppConfig.backend_host}${this.entityDef.endpoints[endpoint]}`;

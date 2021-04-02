@@ -1,3 +1,6 @@
+import { userHasRole } from '../contexts/UserContext';
+const { safeGetProp } = require('../utils/data_access');
+
 const adventureDef = {
     entity_type: 'adventure',
     label: 'Adventure',
@@ -20,18 +23,26 @@ const adventureDef = {
             label: 'Session',
             html_input_type: 'select',
             table_display: false,
-            getOptionsQueryDef: (userContext) => {
+            getOptionsAsync: async (context) => {
                 let queryParams = {};
-                //TODO(authorization): if user is NOT admin, load only available sessions : get /sessions/available WHERE reserved = 0
-                //if (!userContext.hasRole('ADMIN')) {
-                //queryParams = {reserved: false}
-                //}
-                return {
-                    entity_type: 'session',
-                    endpoint: 'getMultipleByQuery',
-                    queryParams: queryParams
+                // if user is NOT admin, load only available sessions : get /sessions/available WHERE reserved = 0
+                if (!userHasRole(safeGetProp(context, ['auth', 'user']), ['ADMIN'])) {
+                    queryParams = {reserved: false};
                 }
-            }
+                const entityResourceHandler = context.resourceContext.resource.handlers['session'];
+                // return promise of options array
+                return entityResourceHandler.callApi('getMultipleByQuery', queryParams)
+                    .then(response => {
+                        const options = response.data.map(row => {
+                            return {
+                                id: row.session_id,
+                                label: entityResourceHandler.getLabel(row)
+                            };
+                        });
+                        return options;
+                    })
+                ;
+            },
         },
         {
             id: 'location_id',

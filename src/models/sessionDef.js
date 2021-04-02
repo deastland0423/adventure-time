@@ -1,10 +1,20 @@
-const { safeGetProp } = require('../utils/data_access');
+const { safeGetProp, dateTimeFormat, timeOnlyFormat } = require('../utils/data_access');
 
 const entityDef = {
     entity_type: 'session',
     label: 'Session',
     id_field: 'session_id',
     label_field: 'start_timestamp',
+    getLabel: (record) => {
+        const start_time = new Date(record.start_time);
+        const end_time = (new Date(start_time))
+        end_time.setMinutes(record.duration);
+        let label = `${dateTimeFormat(start_time)} to ${timeOnlyFormat(end_time)}`;
+        if (record.reserved) {
+            label += ' (RESERVED)';
+        }
+        return label;
+    },
     fields: [
         {
             id: 'session_id',
