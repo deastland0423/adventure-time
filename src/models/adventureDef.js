@@ -27,7 +27,7 @@ const adventureDef = {
                 let queryParams = {};
                 // if user is NOT admin, load only available sessions : get /sessions/available WHERE reserved = 0
                 if (!userHasRole(safeGetProp(context, ['auth', 'user']), ['ADMIN'])) {
-                    queryParams = {reserved: false};
+                    queryParams = {reserved: 0};
                 }
                 const entityResourceHandler = context.resourceContext.resource.handlers['session'];
                 // return promise of options array
