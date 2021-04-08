@@ -3,9 +3,9 @@ import axios from 'axios';
 import AppConfig from '../config';
 import Table from './Table';
 import BasicForm from './BasicForm';
+import { ResourceContext } from "../contexts/ResourceContext";
 import { UserContext, curUserCan } from "../contexts/UserContext";
 const { safeGetProp } = require('../utils/data_access');
-
 
 class EntityBaseComponent extends Component {
   static contextType = UserContext;
@@ -156,12 +156,22 @@ class EntityBaseComponent extends Component {
         return(
             <div>
                 <div ref={this.formWrapperRef} className={this.state.showForm ? null : 'hidden'}>
-                    <BasicForm
-                        entityDef={this.props.entityDef}
-                        onComplete={() => this.finishForm()}
-                        ref={this.formRef}
-                        onCancel={this.hideCreate}
-                    />
+                    <UserContext.Consumer>
+                        {userContext =>
+                            <ResourceContext.Consumer>
+                                {resCntx =>
+                                    <BasicForm
+                                        userContext={userContext}
+                                        resourceContext={resCntx}
+                                        entityDef={this.props.entityDef}
+                                        onComplete={() => this.finishForm()}
+                                        ref={this.formRef}
+                                        onCancel={this.hideCreate}
+                                    />
+                                }
+                            </ResourceContext.Consumer>
+                        }
+                    </UserContext.Consumer>
                 </div>
                 {curUserCan(safeGetProp(this, ['context', 'auth']), 'POST', this.props.entityDef.endpoints.create) ?
                     <button ref={this.createButtonRef} onClick={this.showCreate}>New {this.props.entityDef.label}</button>

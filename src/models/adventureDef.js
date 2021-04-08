@@ -1,3 +1,6 @@
+import { userHasRole } from '../contexts/UserContext';
+const { safeGetProp } = require('../utils/data_access');
+
 const adventureDef = {
     entity_type: 'adventure',
     label: 'Adventure',
@@ -17,15 +20,55 @@ const adventureDef = {
         },
         {
             id: 'session_id',
-            label: 'Session ID',
-            html_input_type: 'number',
-            table_display: false
+            label: 'Session',
+            html_input_type: 'select',
+            table_display: false,
+            getOptionsAsync: async (context) => {
+                let queryParams = {};
+                // if user is NOT admin, load only available sessions : get /sessions/available WHERE reserved = 0
+                if (!userHasRole(safeGetProp(context, ['auth', 'user']), ['ADMIN'])) {
+                    queryParams = {reserved: 0};
+                }
+                const entityResourceHandler = context.resourceContext.resource.handlers['session'];
+                // return promise of options array
+                return entityResourceHandler.callApi('getMultipleByQuery', queryParams)
+                    .then(response => {
+                        const options = response.data.map(row => {
+                            return {
+                                id: row.session_id,
+                                label: entityResourceHandler.getLabel(row)
+                            };
+                        });
+                        return options;
+                    })
+                ;
+            },
         },
         {
             id: 'location_id',
-            label: 'Location ID',
-            html_input_type: 'number',
-            table_display: false
+            label: 'Location',
+            html_input_type: 'select',
+            table_display: false,
+            getOptionsAsync: async (context) => {
+                let queryParams = {};
+                // if user is NOT admin, load only available locations : get /locations/view WHERE is_empty = 0
+                if (!userHasRole(safeGetProp(context, ['auth', 'user']), ['ADMIN'])) {
+                    queryParams = {is_empty: 0};
+                }
+                const entityResourceHandler = context.resourceContext.resource.handlers['location'];
+                // return promise of options array
+                return entityResourceHandler.callApi('getMultipleByQuery', queryParams)
+                    .then(response => {
+                        const options = response.data.map(row => {
+                            return {
+                                id: row.location_id,
+                                label: entityResourceHandler.getLabel(row)
+                            };
+                        });
+                        return options;
+                    })
+                ;
+            },
         },
         {
             id: 'character_count',

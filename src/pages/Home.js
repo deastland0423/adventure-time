@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import constants from '../utils/constants';
 import { useUserContext, userHasRole } from "../contexts/UserContext";
+import { useResourceContext, registerDef } from "../contexts/ResourceContext";
 import EntityBase from '../components/EntityBase';
 import HexMap from '../components/map/HexMap';
 import sessionDef from '../models/sessionDef';
@@ -13,6 +14,16 @@ import 'react-tabs/style/react-tabs.css';
 
 const Home = () => {
     const { auth } = useUserContext();
+    const { dispatch } = useResourceContext();
+    useEffect(() => {
+      // On first page load, initialize all resource/entity types.
+      dispatch(registerDef(sessionDef));
+      dispatch(registerDef(locationDef));
+      dispatch(registerDef(adventureDef));
+      dispatch(registerDef(characterDef));
+      dispatch(registerDef(userDef));
+    }, []);
+
     return (
         <div className='App'>
             <div style={{ backgroundImage: `url("https://cdn.shopify.com/s/files/1/0017/2330/1933/articles/Old-School_Essentials_Classic_Fantasy_Referee_s_Screen_Art_Panels_6f4d7f60-662a-43ef-bbcb-b040b748e7dd_1200x1200.jpg")`}}>

@@ -2,21 +2,70 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import constants from '../utils/constants';
 import AppConfig from '../config';
-import { UserContext } from "../contexts/UserContext";
 const { safeGetProp } = require('../utils/data_access');
 
 class BasicFormComponent extends Component {
-    static contextType = UserContext;
     /**
-     * Must specify entityDef in props
+     * Component props must include:
+     * - entityDef - the entity/model definition
+     * - userContext - UserContext value from context consumer
+     * - resourceContext - ResourceContext value from context consumer
+     * - onComplete - a function called when the form submission is processed successfully
+     * - onCancel - a function called when the cancel button is clicked
      */
     constructor(props) {
         super(props);
         this.state = {
+            options: {},
             success_message: '',
             error_message: ''
         }
         this.clearData();
+
+        // SECTION: Check entityDef and initialize options where needed
+        // in constructor, initialize all options as empty
+        this.initializeOptions();
+        // send async calls to populate the options values
+        this.getOptionsAsync();
+    }
+
+    /**
+     * Initializes options data structures as blank, runs synchronously during constructor.
+     */
+    initializeOptions() {
+        let initOptions = {};
+        for (let i=0; i++; i<this.props.entityDef.fields.length) {
+            const field = this.props.entityDef.fields[i];
+            if (field.html_input_type === 'select') {
+                initOptions[field.id] = [];
+            }
+        }
+        this.setState({options: initOptions});
+    }
+
+    /**
+     * Gets actual options values via async network call.
+     */
+    getOptionsAsync() {
+        this.props.entityDef.fields.forEach(field => {
+            if (field.html_input_type === 'select') {
+                const context = {
+                    auth: this.props.userContext.auth,
+                    resourceContext: this.props.resourceContext
+                };
+                field.getOptionsAsync(context).then(options => {
+                    let stateUpdate = { options: {...this.state.options, [field.id]: options } };
+                    if (typeof this.state[field.id] === 'undefined' && options.length) {
+                        // if not already set, set current value of drop-down to the first option
+                        stateUpdate[field.id] = options[0].id;
+                    }
+                    this.setState(stateUpdate);
+                })
+                .catch(err => {
+                    console.log(`Error getting options for ${field.id}: ${err}`);
+                });
+            }
+        });
     }
 
     /**
@@ -26,7 +75,7 @@ class BasicFormComponent extends Component {
         this.props.entityDef.fields.forEach(field => {
             if (!stateUpdate[field.id] && field.auto_assign) {
                 let contextArg = {};
-                contextArg.auth = safeGetProp(this, ['context', 'auth']);
+                contextArg.auth = this.props.userContext.auth;
                 contextArg.record = stateUpdate;
                 stateUpdate[field.id] = field.auto_assign(contextArg)
             }
@@ -34,6 +83,7 @@ class BasicFormComponent extends Component {
         return stateUpdate;
     }
 
+    // Clear the data in the form.
     clearData() {
         let stateUpdate = {
             success_message: '',
@@ -44,6 +94,8 @@ class BasicFormComponent extends Component {
             // set each field to default value
             if ('default_value' in field) {
                 stateUpdate[field.id] = field.default_value
+            } else if (field.html_input_type === 'select' && safeGetProp(this.state, ['options', field.id], []).length ) {
+                stateUpdate[field.id] = this.state.options[field.id][0].id;
             } else {
                 stateUpdate[field.id] = ''
             }
@@ -52,6 +104,7 @@ class BasicFormComponent extends Component {
         this.setState(stateUpdate);
     }
 
+    // Load data from the given record into the form.
     loadData(record) {
         if (!record) return
         let stateUpdate = {
@@ -87,7 +140,7 @@ class BasicFormComponent extends Component {
       if ('editAccess' in field && field.editAccess) {
         const req = {
           locals: {
-            currentUser: safeGetProp(this, ['context', 'auth', 'user'])
+            currentUser: safeGetProp(this.props.userContext, ['auth', 'user'])
           }
         };
         return field.editAccess(req);
@@ -163,9 +216,21 @@ class BasicFormComponent extends Component {
                                     onChange={event => this.setState({ [field.id]: event.target.checked ? true : false })}
                                 />
                                   :
-                                <input type={field.html_input_type} name={field.id} defaultValue={this.state[field.id]}
-                                    onChange={event => this.setState({ [field.id]: event.target.value })}
-                                />
+                                (field.html_input_type === 'select' ?
+                                    <select name={field.id}
+                                        value={this.state[field.id]}
+                                        onChange={event => this.setState({ [field.id]: event.target.options[event.target.options.selectedIndex].value }) }
+                                    >
+                                        {safeGetProp(this.state.options, [field.id], []).map(option =>
+                                            <option key={`${field.id}_${option.id}`} value={option.id}
+                                            >{option.label}</option>
+                                        )}
+                                    </select>
+                                :
+                                    <input type={field.html_input_type} name={field.id} defaultValue={this.state[field.id]}
+                                        onChange={event => this.setState({ [field.id]: event.target.value })}
+                                    />
+                                )
                             }
                             <br/>
                         </div>
@@ -180,5 +245,6 @@ class BasicFormComponent extends Component {
         );
     }
 }
+
 
 export default BasicFormComponent;

@@ -6,6 +6,7 @@ const constants = {
     HIDE_MODAL: 'HIDE_MODAL',
     // UserContext action types
     SET_ACCESS_RULES: 'SET_ACCESS_RULES',
+    REGISTER_DEF: 'REGISTER_DEF',
     LOGIN_SUCCESS: 'LOGIN_SUCCESS',
     LOGOUT: 'LOGOUT',
     LOGIN_FAIL: 'LOGIN_FAIL'
