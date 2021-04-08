@@ -1,0 +1,18 @@
+#hexmap svg {
+    border: 1px solid black;
+    margin: 10px;
+    width: 100%;
+    height: 500px;
+}
+#hexmap .hex {
+    stroke: black;
+    fill: gray;
+    z-index: 0;
+}
+#hexmap .hex:hover {
+    cursor: pointer;
+}
+.hexlabel {
+    stroke: black;
+    z-index: 10;
+}

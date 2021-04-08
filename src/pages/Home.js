@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import constants from '../utils/constants';
 import { useUserContext, userHasRole } from "../contexts/UserContext";
-import EntityBase from '../components/EntityBase';
 import { useResourceContext, registerDef } from "../contexts/ResourceContext";
+import EntityBase from '../components/EntityBase';
+import HexMap from '../components/map/HexMap';
 import sessionDef from '../models/sessionDef';
 import locationDef from '../models/locationDef';
 import adventureDef from '../models/adventureDef';
@@ -47,7 +48,8 @@ const Home = () => {
                         <div>
                             <Tabs>
                                 <TabList>
-                                <Tab>Character Management</Tab>
+                                    <Tab>Character Management</Tab>
+                                    <Tab>Hex Map</Tab>
                                     <Tab>Local Map</Tab>
                                     <Tab>World Map</Tab>
                                     <Tab>Adventures</Tab>
@@ -55,6 +57,9 @@ const Home = () => {
                                 <TabPanel>
                                     <h3>Your Characters</h3>
                                     <EntityBase entityDef={characterDef} includeOps={false} />
+                                </TabPanel>
+                                <TabPanel>
+                                    <HexMap/>
                                 </TabPanel>
                                 <TabPanel>
                                     <h3>Northhold Hex</h3>
