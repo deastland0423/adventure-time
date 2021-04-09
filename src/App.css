@@ -146,6 +146,13 @@
     display: inline-block;
 }
 
+.loading {
+  font-size: 36px;
+}
+.loading img {
+  padding-right: 20px;
+}
+
 #modal-backdrop {
   position: fixed;
   top: 0;

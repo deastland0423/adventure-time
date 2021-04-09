@@ -1,6 +1,7 @@
 const constants = {
     AUTOHIDE_SUCCESS_MESSAGES_SEC: 3,
     DEBUG_PERMS: false,
+    MAP_ID: 1,
     // ModalContext action types
     SHOW_MODAL: 'SHOW_MODAL',
     HIDE_MODAL: 'HIDE_MODAL',
