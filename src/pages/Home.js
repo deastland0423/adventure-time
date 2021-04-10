@@ -11,6 +11,7 @@ import characterDef from '../models/characterDef';
 import userDef from '../models/userDef';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
+import Calendar from '../components/Calendar';
 
 const Home = () => {
     const { auth } = useUserContext();
@@ -50,6 +51,7 @@ const Home = () => {
                                 <TabList>
                                     <Tab>Character Management</Tab>
                                     <Tab>Hex Map</Tab>
+                                    <Tab>Calendar</Tab>
                                     <Tab>Local Map</Tab>
                                     <Tab>World Map</Tab>
                                     <Tab>Adventures</Tab>
@@ -62,7 +64,11 @@ const Home = () => {
                                     <HexMap/>
                                 </TabPanel>
                                 <TabPanel>
-                                    <h3>Northhold Hex</h3>
+                                    <h3>Calendar of Adventure!</h3>
+                                    <Calendar/>
+                                </TabPanel>
+                                <TabPanel>
+                                    <h3>Northhold Local Area</h3>
                                     <div id="picture-scroll">
                                         <img src="https://adventure-time-world-map.s3.amazonaws.com/Northhold.jpg" alt="new" />
                                     </div>

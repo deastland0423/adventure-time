@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { useModalContext, showModal } from "../../contexts/ModalContext";
+import { hexCoordsDisplay } from '../../utils/formattingUtils';
 import './map.css';
 
 const HexMap = () => {
@@ -47,7 +48,7 @@ const HexMap = () => {
 
                 if (settings_show_hex_coordinates) {
                     const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                    label.textContent = `${grid_x},${grid_y}`;
+                    label.textContent = `${hexCoordsDisplay(grid_x,grid_y)}`;
                     label.setAttribute("x", Math.ceil(base_x));
                     label.setAttribute("y", Math.ceil(base_y));
                     label.setAttribute("class", "hexlabel");
