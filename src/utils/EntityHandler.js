@@ -21,7 +21,17 @@ class EntityHandler {
     callApi(endpoint, queryParams = {}) {
         //TODO: all the validations
         let url = `${AppConfig.backend_host}${this.entityDef.endpoints[endpoint]}`;
-        const qs = Object.keys(queryParams).map(key => `${key}=${queryParams[key]}`).join('&');
+        const qs = Object.keys(queryParams).map(
+          key => {
+            let val;
+            if (queryParams[key] === null) {
+              val = '';
+            } else {
+              val = queryParams[key];
+            }
+            return `${key}=${val}`;
+          }
+        ).join('&');
         if (qs !== "") {
             url += '?'+qs;
         }

@@ -2,6 +2,7 @@ import { useRef, useEffect } from 'react';
 import { useModalContext, showModal } from "../../contexts/ModalContext";
 import { hexCoordsDisplay } from '../../utils/formattingUtils';
 import './map.css';
+import HexDetail from './HexDetail';
 
 const HexMap = () => {
     const { dispatch: dispatchModal } = useModalContext();
@@ -43,7 +44,9 @@ const HexMap = () => {
                 canvasRef.current.appendChild(hex);
                 hex.addEventListener("click", (event) => {
                     const hexCoords = event.target.getAttribute('data-coords');
-                    dispatchModal(showModal(`this is the modal for hex at ${hexCoords}`));
+                    dispatchModal(showModal(
+                        <HexDetail hexCoords={hexCoords}/>
+                    ));
                 });
 
                 if (settings_show_hex_coordinates) {
