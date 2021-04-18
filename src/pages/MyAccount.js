@@ -19,6 +19,7 @@ const MyAccount = () => {
             <div className="inner">
                 {auth.user ?
                     <BasicForm
+                        userContext={{auth}}
                         entityDef={userDef}
                         onComplete={() => {}}
                         ref={formRef}
