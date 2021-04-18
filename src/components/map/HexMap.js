@@ -13,7 +13,7 @@ const HexMap = () => {
     const grid_cols = 10;   // How wide the world map is in hexes.
     const grid_rows = 10;   // How tall the world map is in hexes.
     // User-modifiable map "settings"
-    const settings_show_hex_coordinates = true;
+    const settings_show_hex_coordinates = false;
     const settings_hex_radius = 368/2;
     const settings_initial_topleft_grid_x = 2;
     const settings_initial_topleft_grid_y = 6;
