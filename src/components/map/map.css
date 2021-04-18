@@ -1,21 +1,17 @@
 #hexmap svg {
   border: 1px solid black;
-  margin: 10px;
-  width: 100%;
-  height: 500px;
+  padding: 10px;
   background-image: url("https://2.bp.blogspot.com/-tMzN7-Z8m3Q/UKd4-RcchtI/AAAAAAAABEo/5I0VNmnX9Q0/s1600/fantasy_7bdc2a22.jpg");
   background-repeat: no-repeat;
 }
 #hexmap .hex {
-  background-image: url("https://image.flaticon.com/icons/png/512/896/896689.png");
   stroke: whitesmoke;
-  /* fill: gray; */
   z-index: 0;
 }
 #hexmap .hex:hover {
   cursor: pointer;
 }
 .hexlabel {
-  stroke: whitesmoke;
+  stroke: black;
   z-index: 10;
 }
