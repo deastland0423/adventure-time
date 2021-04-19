@@ -1,7 +1,7 @@
 const { safeGetProp, dateTimeFormat, timeOnlyFormat } = require('../utils/data_access');
 
-const entityDef = {
-  entity_type: 'session',
+const sessionDef = {
+  resource_type: 'session',
   label: 'Session',
   id_field: 'session_id',
   label_field: 'start_timestamp',
@@ -61,4 +61,4 @@ const entityDef = {
     deleteOne: '/session'
   }
 };
-export default entityDef;
+export default sessionDef;

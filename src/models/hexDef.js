@@ -1,5 +1,5 @@
 const hexDef = {
-  entity_type: 'hex',
+  resource_type: 'hex',
   label: 'Hex',
   id_field: 'hex_id',
   plural: 'hexes',

@@ -1,7 +1,7 @@
 const { safeGetProp } = require('../utils/data_access');
 
 const characterDef = {
-  entity_type: 'character',
+  resource_type: 'character',
   label: 'Character',
   id_field: 'character_id',
   label_field: 'name',

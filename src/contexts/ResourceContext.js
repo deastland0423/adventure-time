@@ -1,6 +1,6 @@
 import React, { createContext, useReducer, useContext } from "react";
 import constants from '../utils/constants';
-import EntityHandler from '../utils/EntityHandler';
+import ResourceHandler from '../utils/ResourceHandler';
 
 export const ResourceContext = createContext();
 
@@ -11,8 +11,8 @@ const initialState = {
 };
 
 // Action creators
-export function registerDef(entityDef) {
-  return { type: constants.REGISTER_DEF, entityDef };
+export function registerDef(resourceDef) {
+  return { type: constants.REGISTER_DEF, resourceDef };
 }
 
 // Reducer
@@ -21,8 +21,8 @@ export const resourceReducer = (state, action) => {
     case constants.REGISTER_DEF:
       let newDefs = state.defs;
       let newHandlers = state.handlers;
-      newDefs[action.entityDef.entity_type] = action.entityDef;
-      newHandlers[action.entityDef.entity_type] = new EntityHandler(action.entityDef);
+      newDefs[action.resourceDef.resource_type] = action.resourceDef;
+      newHandlers[action.resourceDef.resource_type] = new ResourceHandler(action.resourceDef);
       return { ...state, defs: newDefs, handlers: newHandlers };
     default:
       return state;

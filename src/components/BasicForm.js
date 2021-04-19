@@ -7,7 +7,7 @@ const { safeGetProp } = require('../utils/data_access');
 class BasicFormComponent extends Component {
   /**
    * Component props must include:
-   * - entityDef - the entity/model definition
+   * - resourceDef - the resource/model definition
    * - userContext - UserContext value from context consumer
    * - resourceContext - ResourceContext value from context consumer
    * - onComplete - a function called when the form submission is processed successfully
@@ -22,7 +22,7 @@ class BasicFormComponent extends Component {
     }
     this.clearData();
 
-    // SECTION: Check entityDef and initialize options where needed
+    // SECTION: Check resourceDef and initialize options where needed
     // in constructor, initialize all options as empty
     this.initializeOptions();
     // send async calls to populate the options values
@@ -34,8 +34,8 @@ class BasicFormComponent extends Component {
    */
   initializeOptions() {
     let initOptions = {};
-    for (let i=0; i++; i<this.props.entityDef.fields.length) {
-      const field = this.props.entityDef.fields[i];
+    for (let i=0; i++; i<this.props.resourceDef.fields.length) {
+      const field = this.props.resourceDef.fields[i];
       if (field.html_input_type === 'select') {
         initOptions[field.id] = [];
       }
@@ -47,7 +47,7 @@ class BasicFormComponent extends Component {
    * Gets actual options values via async network call.
    */
   getOptionsAsync() {
-    this.props.entityDef.fields.forEach(field => {
+    this.props.resourceDef.fields.forEach(field => {
       if (field.html_input_type === 'select') {
         const context = {
           auth: this.props.userContext.auth,
@@ -72,7 +72,7 @@ class BasicFormComponent extends Component {
    * Runs before setState() to update calculated or auto-assigned fields
    */
   preUpdateState(stateUpdate) {
-    this.props.entityDef.fields.forEach(field => {
+    this.props.resourceDef.fields.forEach(field => {
       if (!stateUpdate[field.id] && field.auto_assign) {
         let contextArg = {};
         contextArg.auth = this.props.userContext.auth;
@@ -90,7 +90,7 @@ class BasicFormComponent extends Component {
       error_message: '',
       isNew: true
     };
-    this.props.entityDef.fields.forEach(field => {
+    this.props.resourceDef.fields.forEach(field => {
       // set each field to default value
       if ('default_value' in field) {
         stateUpdate[field.id] = field.default_value
@@ -112,7 +112,7 @@ class BasicFormComponent extends Component {
       error_message: '',
       isNew: false
     };
-    this.props.entityDef.fields.forEach(field => {
+    this.props.resourceDef.fields.forEach(field => {
       if (field.html_input_type === "datetime-local") {
         if (record[field.id].slice(-1) === 'Z') {
           record[field.id] = record[field.id].slice(0, -1)    // remove trailing Z
@@ -128,8 +128,8 @@ class BasicFormComponent extends Component {
 
   contentFields() {
     let contentFields = [];
-    this.props.entityDef.fields.forEach(field => {
-      if(field.id !== this.props.entityDef.id_field) {
+    this.props.resourceDef.fields.forEach(field => {
+      if(field.id !== this.props.resourceDef.id_field) {
         contentFields.push(field);
       }
     });
@@ -153,7 +153,7 @@ class BasicFormComponent extends Component {
   handleSubmit = async (event) => {
     event.preventDefault();
     if (this.state.isNew) {
-      const createUrl = `${AppConfig.backend_host}${this.props.entityDef.endpoints.create}`;
+      const createUrl = `${AppConfig.backend_host}${this.props.resourceDef.endpoints.create}`;
       axios
       .post(createUrl, this.state)
       .then( response => {
@@ -165,7 +165,7 @@ class BasicFormComponent extends Component {
         this.setState( { error_message: error.response.data, success_message: '' } );
       });
     } else {
-      const updateUrl = `${AppConfig.backend_host}${this.props.entityDef.endpoints.update}/${this.state[this.props.entityDef.id_field]}`;
+      const updateUrl = `${AppConfig.backend_host}${this.props.resourceDef.endpoints.update}/${this.state[this.props.resourceDef.id_field]}`;
       axios
       .put(updateUrl, this.state)
       .then( response => {
@@ -191,7 +191,7 @@ class BasicFormComponent extends Component {
   }
 
   getFieldKey(field) {
-    let key = this.props.entityDef.entity_type+'_form_'+field.id;
+    let key = this.props.resourceDef.resource_type+'_form_'+field.id;
     if (field.html_input_type === 'checkbox') {
       key = key+'_'+this.state[field.id];
     }
@@ -232,7 +232,7 @@ class BasicFormComponent extends Component {
             </div>
           : null)
         )}
-        <input type="submit" value={`${this.state.isNew ? 'Create' : 'Save'} ${this.props.entityDef.label}`} data-test="submit" />
+        <input type="submit" value={`${this.state.isNew ? 'Create' : 'Save'} ${this.props.resourceDef.label}`} data-test="submit" />
           {this.props.onCancel ?
             <button onClick={this.buttonHandler(this.props.onCancel)}>Cancel</button>
           : null}

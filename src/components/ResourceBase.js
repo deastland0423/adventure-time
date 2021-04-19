@@ -7,10 +7,10 @@ import { ResourceContext } from "../contexts/ResourceContext";
 import { UserContext, curUserCan } from "../contexts/UserContext";
 const { safeGetProp } = require('../utils/data_access');
 
-class EntityBaseComponent extends Component {
+class ResourceBaseComponent extends Component {
   static contextType = UserContext;
   /**
-   * Must specify entityDef in props
+   * Must specify resourceDef in props
    */
   constructor(props) {
     super(props);
@@ -24,7 +24,7 @@ class EntityBaseComponent extends Component {
   }
 
   tableFields() {
-    let _fields = this.props.entityDef.fields.filter(field => field.table_display)
+    let _fields = this.props.resourceDef.fields.filter(field => field.table_display)
     if(this.props.includeOps) {
       _fields.push({
         id: '__OPERATIONS',
@@ -38,8 +38,8 @@ class EntityBaseComponent extends Component {
   tableData() {
     let tableData = this.state.records.map(row => {
       let tableRow = {...row};
-      this.props.entityDef.fields.forEach(field => {
-        // If entityDef.field's table_display is a string, assume it's the name of another field in the data and show the value of that field instead.
+      this.props.resourceDef.fields.forEach(field => {
+        // If resourceDef.field's table_display is a string, assume it's the name of another field in the data and show the value of that field instead.
         if (field.table_display && typeof(field.table_display) === 'string' && field.table_display in row) {
           const newValue = row[field.table_display]
           tableRow[field.id] = newValue;
@@ -83,7 +83,7 @@ class EntityBaseComponent extends Component {
 
   getRecord(record_id) {
     // check loaded records first
-    const record = this.state.records.find(r => r[this.props.entityDef.id_field] === record_id)
+    const record = this.state.records.find(r => r[this.props.resourceDef.id_field] === record_id)
     if (record) {
       return record;
     }
@@ -102,7 +102,7 @@ class EntityBaseComponent extends Component {
   }
 
   doDelete(record_id) {
-    let deleteOneUrl = `${AppConfig.backend_host}${this.props.entityDef.endpoints.deleteOne}/${record_id}`;
+    let deleteOneUrl = `${AppConfig.backend_host}${this.props.resourceDef.endpoints.deleteOne}/${record_id}`;
     axios
     .delete(deleteOneUrl)
     .then( response => {
@@ -125,19 +125,19 @@ class EntityBaseComponent extends Component {
   }
 
   refreshTableData() {
-    let getAllUrl = `${AppConfig.backend_host}${this.props.entityDef.endpoints.getMultipleByQuery}`;
+    let getAllUrl = `${AppConfig.backend_host}${this.props.resourceDef.endpoints.getMultipleByQuery}`;
     axios
     .get(getAllUrl)
     .then( response => {
       let tableData = response.data.map(row => {
-        row.id = row[this.props.entityDef.id_field];
+        row.id = row[this.props.resourceDef.id_field];
         row.__OPERATIONS = (
           <div>
-            {curUserCan(safeGetProp(this, ['context', 'auth']), 'DELETE', this.props.entityDef.endpoints.deleteOne+'/'+row.id) ?
+            {curUserCan(safeGetProp(this, ['context', 'auth']), 'DELETE', this.props.resourceDef.endpoints.deleteOne+'/'+row.id) ?
               <button onClick={() => this.doDelete(row.id)}>delete</button>
               : null
             }
-            {curUserCan(safeGetProp(this, ['context', 'auth']), 'PUT', this.props.entityDef.endpoints.update+'/'+row.id) ?
+            {curUserCan(safeGetProp(this, ['context', 'auth']), 'PUT', this.props.resourceDef.endpoints.update+'/'+row.id) ?
               <button onClick={() => this.showEdit(row.id)}>edit</button>
               : null
             }
@@ -162,7 +162,7 @@ class EntityBaseComponent extends Component {
                   <BasicForm
                     userContext={userContext}
                     resourceContext={resCntx}
-                    entityDef={this.props.entityDef}
+                    resourceDef={this.props.resourceDef}
                     onComplete={() => this.finishForm()}
                     ref={this.formRef}
                     onCancel={this.hideCreate}
@@ -172,8 +172,8 @@ class EntityBaseComponent extends Component {
             }
           </UserContext.Consumer>
         </div>
-        {curUserCan(safeGetProp(this, ['context', 'auth']), 'POST', this.props.entityDef.endpoints.create) ?
-          <button ref={this.createButtonRef} onClick={this.showCreate}>New {this.props.entityDef.label}</button>
+        {curUserCan(safeGetProp(this, ['context', 'auth']), 'POST', this.props.resourceDef.endpoints.create) ?
+          <button ref={this.createButtonRef} onClick={this.showCreate}>New {this.props.resourceDef.label}</button>
           : null
         }
         <Table
@@ -185,4 +185,4 @@ class EntityBaseComponent extends Component {
   }
 }
 
-export default EntityBaseComponent;
+export default ResourceBaseComponent;

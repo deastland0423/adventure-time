@@ -2,7 +2,7 @@ import { userHasRole } from '../contexts/UserContext';
 const { safeGetProp } = require('../utils/data_access');
 
 const adventureDef = {
-  entity_type: 'adventure',
+  resource_type: 'adventure',
   label: 'Adventure',
   id_field: 'adventure_id',
   label_field: 'name',
@@ -29,14 +29,14 @@ const adventureDef = {
         if (!userHasRole(safeGetProp(context, ['auth', 'user']), ['ADMIN'])) {
           queryParams = {reserved: 0};
         }
-        const entityResourceHandler = context.resourceContext.resource.handlers['session'];
+        const resourceHandler = context.resourceContext.resource.handlers['session'];
         // return promise of options array
-        return entityResourceHandler.callApi('getMultipleByQuery', queryParams)
+        return resourceHandler.callApi('getMultipleByQuery', queryParams)
           .then(response => {
             const options = response.data.map(row => {
               return {
                 id: row.session_id,
-                label: entityResourceHandler.getLabel(row)
+                label: resourceHandler.getLabel(row)
               };
             });
             return options;
@@ -50,14 +50,14 @@ const adventureDef = {
       html_input_type: 'select',
       table_display: false,
       getOptionsAsync: async (context) => {
-        const entityResourceHandler = context.resourceContext.resource.handlers['location'];
+        const resourceHandler = context.resourceContext.resource.handlers['location'];
         // return promise of options array
-        return entityResourceHandler.callApi('getMultipleByQuery')
+        return resourceHandler.callApi('getMultipleByQuery')
           .then(response => {
             const options = response.data.map(row => {
               return {
                 id: row.location_id,
-                label: entityResourceHandler.getLabel(row)
+                label: resourceHandler.getLabel(row)
               };
             });
             return options;

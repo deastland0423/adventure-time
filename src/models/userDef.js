@@ -1,7 +1,7 @@
 const { safeGetProp } = require('../utils/data_access');
 
 const userDef = {
-  entity_type: 'user',
+  resource_type: 'user',
   label: 'User',
   id_field: 'user_id',
   label_field: 'username',

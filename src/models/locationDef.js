@@ -1,5 +1,5 @@
 const locationDef = {
-  entity_type: 'location',
+  resource_type: 'location',
   label: 'Location',
   id_field: 'location_id',
   label_field: 'name',
@@ -28,14 +28,14 @@ const locationDef = {
       html_input_type: 'select',
       table_display: false,
       getOptionsAsync: async (context) => {
-        const entityResourceHandler = context.resourceContext.resource.handlers['hex'];
+        const resourceHandler = context.resourceContext.resource.handlers['hex'];
         // return promise of options array
-        return entityResourceHandler.callApi('getMultipleByQuery')
+        return resourceHandler.callApi('getMultipleByQuery')
           .then(response => {
             const options = response.data.map(row => {
               return {
                 id: row.hex_id,
-                label: entityResourceHandler.getLabel(row)
+                label: resourceHandler.getLabel(row)
               };
             });
             return options;

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import constants from '../utils/constants';
 import { useUserContext, userHasRole } from "../contexts/UserContext";
 import { useResourceContext, registerDef } from "../contexts/ResourceContext";
-import EntityBase from '../components/EntityBase';
+import ResourceBase from '../components/ResourceBase';
 import HexMap from '../components/map/HexMap';
 import sessionDef from '../models/sessionDef';
 import locationDef from '../models/locationDef';
@@ -18,7 +18,7 @@ const Home = () => {
   const { auth } = useUserContext();
   const { dispatch } = useResourceContext();
   useEffect(() => {
-    // On first page load, initialize all resource/entity types.
+    // On first page load, initialize all resource types.
     dispatch(registerDef(sessionDef));
     dispatch(registerDef(locationDef));
     dispatch(registerDef(adventureDef));
@@ -61,7 +61,7 @@ const Home = () => {
                 </TabList>
                 <TabPanel>
                   <h3>Your Characters</h3>
-                  <EntityBase entityDef={characterDef} includeOps={false} />
+                  <ResourceBase resourceDef={characterDef} includeOps={false} />
                 </TabPanel>
                 <TabPanel>
                   <HexMap/>
@@ -84,7 +84,7 @@ const Home = () => {
                 </TabPanel>
                 <TabPanel>
                   <h3>Calls to Adventure</h3>
-                  <EntityBase entityDef={adventureDef} includeOps={true} />
+                  <ResourceBase resourceDef={adventureDef} includeOps={true} />
                 </TabPanel>
               </Tabs>
             </div>
@@ -101,11 +101,11 @@ const Home = () => {
 
               <TabPanel>
                 <h3>Locations</h3>
-                <EntityBase entityDef={locationDef} includeOps={true} />
+                <ResourceBase resourceDef={locationDef} includeOps={true} />
               </TabPanel>
               <TabPanel>
                 <h3>Game Sessions</h3>
-                <EntityBase entityDef={sessionDef} includeOps={true} />
+                <ResourceBase resourceDef={sessionDef} includeOps={true} />
               </TabPanel>
             </Tabs>
           </div>
@@ -122,11 +122,11 @@ const Home = () => {
 
             <TabPanel>
               <h3>Hexes</h3>
-              <EntityBase entityDef={hexDef} includeOps={true} />
+              <ResourceBase resourceDef={hexDef} includeOps={true} />
             </TabPanel>
             <TabPanel>
               <h3>Registered Players</h3>
-              <EntityBase entityDef={userDef} includeOps={true} />
+              <ResourceBase resourceDef={userDef} includeOps={true} />
             </TabPanel>
           </Tabs>
         </div>

@@ -1,25 +1,25 @@
 import axios from 'axios';
 import AppConfig from '../config';
 
-class EntityHandler {
-  constructor(entityDef) {
-    this.entityDef = entityDef;
+class ResourceHandler {
+  constructor(resourceDef) {
+    this.resourceDef = resourceDef;
   }
 
   getLabel(record) {
     // If there's a callback defined, use that.
-    if ('getLabel' in this.entityDef && this.entityDef.getLabel) {
-      return this.entityDef.getLabel(record);
+    if ('getLabel' in this.resourceDef && this.resourceDef.getLabel) {
+      return this.resourceDef.getLabel(record);
     }
     // Otherwise just use the label field
     else {
-      return record[this.entityDef.label_field];
+      return record[this.resourceDef.label_field];
     }
   }
 
   callApi(endpoint, queryParams = {}) {
     //TODO: all the validations
-    let url = `${AppConfig.backend_host}${this.entityDef.endpoints[endpoint]}`;
+    let url = `${AppConfig.backend_host}${this.resourceDef.endpoints[endpoint]}`;
     const qs = Object.keys(queryParams).map(
       key => {
         let val;
@@ -34,9 +34,9 @@ class EntityHandler {
     if (qs !== "") {
       url += '?'+qs;
     }
-    console.log(`DEBUG: EntityHandler(${this.entityDef.entity_type}.callAPI(${endpoint}) - url: ${url}`);
+    console.log(`DEBUG: ResourceHandler(${this.resourceDef.resource_type}.callAPI(${endpoint}) - url: ${url}`);
     return axios.get(url);
   }
 }
 
-export default EntityHandler;
+export default ResourceHandler;

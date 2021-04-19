@@ -20,7 +20,7 @@ const MyAccount = () => {
         {auth.user ?
           <BasicForm
             userContext={{auth}}
-            entityDef={userDef}
+            resourceDef={userDef}
             onComplete={() => {}}
             ref={formRef}
             onCancel={false}
