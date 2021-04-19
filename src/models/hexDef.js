@@ -41,11 +41,11 @@ const hexDef = {
       table_display: true,
       getOptionsAsync: async (context) => {
         return Promise.resolve([
-            {id:'LIGHT_FOREST', label:'Light Forest'},
-            {id:'DENSE_FOREST',label:'Dense forest'},
-            {id:'GRASSLAND',label:'Grassland'},
-            {id:'MOUNTAIN',label:'Mountain'},
-            {id:'SWAMP',label:'Swamp'}
+          {id:'LIGHT_FOREST', label:'Light Forest'},
+          {id:'DENSE_FOREST',label:'Dense forest'},
+          {id:'GRASSLAND',label:'Grassland'},
+          {id:'MOUNTAIN',label:'Mountain'},
+          {id:'SWAMP',label:'Swamp'}
         ]);
       }
     },

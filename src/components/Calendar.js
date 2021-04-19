@@ -24,22 +24,22 @@ const events = [
 ];  
 
 export class Calendar extends Component {  
-    render() {  
-        return (  
-            <div className="container">  
-                <div className="row title" style={{ marginTop: "20px" }} >  
-                    <div class="col-sm-12 btn btn-info">  
-                        Dungeon Master Sessions  
-               </div>  
-                </div>  
-                <FullCalendar  
-                    defaultView="dayGridMonth"  
-                    plugins={[dayGridPlugin]}  
-                    events={events}  
-                />  
-            </div>  
-        )  
-    }  
-}  
-  
-export default Calendar  
+  render() {  
+    return (  
+      <div className="container">  
+        <div className="row title" style={{ marginTop: "20px" }} >  
+          <div class="col-sm-12 btn btn-info">  
+            Dungeon Master Sessions  
+          </div>  
+        </div>  
+        <FullCalendar  
+            defaultView="dayGridMonth"  
+            plugins={[dayGridPlugin]}  
+            events={events}  
+        />  
+      </div>  
+    );
+  }  
+};
+
+export default Calendar;

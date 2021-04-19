@@ -4,16 +4,16 @@ import constants from '../utils/constants';
 export const UserContext = createContext();
 
 export function userHasRole(user, roles) {
-    if (!user) {
-        return false;
-    }
-    if (!('roles' in user)) {
-      user.roles = []
-    }
-    if (typeof roles === 'string') {
-        roles = [roles]
-    }
-    return roles.some(role => user.roles.includes(role));
+  if (!user) {
+    return false;
+  }
+  if (!('roles' in user)) {
+    user.roles = []
+  }
+  if (typeof roles === 'string') {
+    roles = [roles]
+  }
+  return roles.some(role => user.roles.includes(role));
 }
 
 export function curUserCan(auth, reqMethod, reqUrl) {
@@ -92,9 +92,7 @@ export const authReducer = (state, action) => {
 
 function UserProvider(props) {
   const [auth, dispatch] = useReducer(authReducer, initialState);
-
   const authData = { auth, dispatch };
-
   return <UserContext.Provider value={authData} {...props} />;
 }
 

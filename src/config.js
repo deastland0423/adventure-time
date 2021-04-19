@@ -3,7 +3,7 @@ const defaultAppConfig = {
   backend_host: "https://62zrxtutca.execute-api.us-east-1.amazonaws.com/dev"
 };
 const AppConfig = {
-    ...defaultAppConfig,
-    ...localConfig
+  ...defaultAppConfig,
+  ...localConfig
 }
 export default AppConfig;

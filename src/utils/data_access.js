@@ -9,8 +9,8 @@ const safeGetProp = (obj, path, default_value = null) =>
   path.reduce((xs, x) => (xs && xs[x]) ? xs[x] : default_value, obj)
 
 function padTime(number) {
-    if (number < 10) return `0${number}`;
-    return number;
+  if (number < 10) return `0${number}`;
+  return number;
 }
 
 const dateOnlyFormat = (date) =>

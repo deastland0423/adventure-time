@@ -9,52 +9,50 @@ import {
 } from "../contexts/UserContext";
 
 const Login = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");  
-    const [redirect, setRedirect] = useState(false);
-    const { dispatch } = useUserContext();
-    
-    const submit = async (e) => {
-        e.preventDefault();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");  
+  const [redirect, setRedirect] = useState(false);
+  const { dispatch } = useUserContext();
+  
+  const submit = async (e) => {
+    e.preventDefault();
 
-        const url = `${AppConfig.backend_host}/login`;
-        const config = {
-            method: 'post',
-            url: url,
-            data: {
-                email_address: email,
-                password: password
-            },
-            withCredentials: true
-        }
-
-        try {
-            const response = await axios(config);
-            console.log('Login response: ', response.data);
-            dispatch(loginSuccess(response.data.user));
-            setRedirect(true);
-        } catch (err) {
-            alert("Bad signin attempt: ", err);
-            dispatch(loginFail(err.message));
-        }        
+    const url = `${AppConfig.backend_host}/login`;
+    const config = {
+      method: 'post',
+      url: url,
+      data: {
+        email_address: email,
+        password: password
+      },
+      withCredentials: true
     }
 
-    if(redirect) {
-        return <Redirect to="/" />
-    }
-    
-    return (
-        <div className="form-signin" onSubmit={submit} >
-            <form>
-                <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
-                <input type="email" className="form-control" placeholder="Email address" required onChange={e => setEmail(e.target.value)} />
+    try {
+      const response = await axios(config);
+      console.log('Login response: ', response.data);
+      dispatch(loginSuccess(response.data.user));
+      setRedirect(true);
+    } catch (err) {
+      alert("Bad signin attempt: ", err);
+      dispatch(loginFail(err.message));
+    }        
+  }
 
-                <input type="password" className="form-control" placeholder="Password" required onChange={e => setPassword(e.target.value)} />
+  if(redirect) {
+    return <Redirect to="/" />
+  }
 
-                <button className="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-            </form>
-        </div>
-    );
+  return (
+    <div className="form-signin" onSubmit={submit} >
+      <form>
+        <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
+        <input type="email" className="form-control" placeholder="Email address" required onChange={e => setEmail(e.target.value)} />
+        <input type="password" className="form-control" placeholder="Password" required onChange={e => setPassword(e.target.value)} />
+        <button className="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+      </form>
+    </div>
+  );
 };
 
 export default Login;

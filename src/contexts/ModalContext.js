@@ -33,9 +33,7 @@ export const modalReducer = (state, action) => {
 
 function ModalProvider(props) {
   const [modal, dispatch] = useReducer(modalReducer, initialState);
-
   const modalData = { modal, dispatch };
-
   return <ModalContext.Provider value={modalData} {...props} />;
 }
 
