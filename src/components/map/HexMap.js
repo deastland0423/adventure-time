@@ -87,7 +87,7 @@ const HexMap = () => {
         const hex = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
         hex.setAttribute("points", poly_def);
         hex.setAttribute("data-coords",`${grid_x},${grid_y}`);
-        hex.setAttribute("class","hex");
+        let classList = ['hex'];
         let hex_defined = false;
         const hexDef = getHex(`${grid_x},${grid_y}`);
         if(hexDef) {
@@ -111,17 +111,25 @@ const HexMap = () => {
             default:
               hex_defined = false;
           }
+          if(hexDef.is_explored) {
+            classList.push('explored');
+          } else {
+            classList.push('unexplored');
+          }
         }
-        if(!hex_defined) {
+        if(hex_defined) {
+          hex.addEventListener("click", (event) => {
+            const hexCoords = event.target.getAttribute('data-coords');
+            dispatchModal(showModal(
+              <HexDetail hexCoords={hexCoords}/>
+            ));
+          });
+        } else {
           hex.setAttribute("fill", "whitesmoke");
+          classList.push('undef');
         }
+        hex.setAttribute("class",classList.join(' '));
         canvasRef.current.appendChild(hex);
-        hex.addEventListener("click", (event) => {
-          const hexCoords = event.target.getAttribute('data-coords');
-          dispatchModal(showModal(
-            <HexDetail hexCoords={hexCoords}/>
-          ));
-        });
 
         if (settings_show_hex_coordinates) {
           const label = document.createElementNS("http://www.w3.org/2000/svg", "text");

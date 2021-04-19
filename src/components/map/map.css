@@ -11,6 +11,9 @@
 #hexmap .hex:hover {
   cursor: pointer;
 }
+#hexmap .hex.undef:hover {
+  cursor: not-allowed;
+}
 .hexlabel {
   stroke: black;
   z-index: 10;
