@@ -16,12 +16,6 @@ const locationDef = {
             table_display: true
         },
         {
-            id: 'is_empty',
-            label: 'Nothing to see here',
-            html_input_type: 'checkbox',
-            table_display: true
-        },
-        {
             id: 'map_id',
             label: 'Map ID',
             default_value: 1,
@@ -29,10 +23,36 @@ const locationDef = {
             table_display: false
         },
         {
-            id: 'hex',
+            id: 'hex_id',
             label: 'Hex',
-            default_value: '0101',
-            html_input_type: 'text',
+            html_input_type: 'select',
+            table_display: false,
+            getOptionsAsync: async (context) => {
+                const entityResourceHandler = context.resourceContext.resource.handlers['hex'];
+                // return promise of options array
+                return entityResourceHandler.callApi('getMultipleByQuery')
+                    .then(response => {
+                        const options = response.data.map(row => {
+                            return {
+                                id: row.hex_id,
+                                label: entityResourceHandler.getLabel(row)
+                            };
+                        });
+                        return options;
+                    })
+                ;
+            },
+        },
+        {
+            id: 'hex_name',
+            label: 'Hex Name',
+            html_input_type: false,
+            table_display: true
+        },
+        {
+            id: 'hex_coords',
+            label: 'Hex Coords',
+            html_input_type: false,
             table_display: true
         },
         {
@@ -43,7 +63,7 @@ const locationDef = {
         }
     ],
     endpoints: {
-        getMultipleByQuery: '/locations',
+        getMultipleByQuery: '/locations/view',
         create: '/locations',
         //TODO: figure out how to add /:location_id parameter to pattern, dynamically injected from record context?
         update: '/location',

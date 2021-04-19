@@ -8,10 +8,11 @@ const HexDetail = (props) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isDefined, setIsDefined] = useState(null);
   const [title, setTitle] = useState(null);
-  const [isEmpty, setIsEmpty] = useState(null);
+  const [isExplored, setIsExplored] = useState(null);
+  const [terrain, setTerrain] = useState(null);
 
   useEffect(() => {
-    resource.handlers['location'].callApi('getMultipleByQuery', {map_id: constants.MAP_ID, hex: props.hexCoords, sub_hex: null})
+    resource.handlers['hex'].callApi('getMultipleByQuery', {map_id: constants.MAP_ID, coords: props.hexCoords})
     .then(response => {
       setIsLoading(false);
       if (response.data.length === 0) {
@@ -23,7 +24,8 @@ const HexDetail = (props) => {
       }
       setIsDefined(true);
       setTitle(response.data[0].name);
-      setIsEmpty(response.data[0].is_empty);
+      setIsExplored(response.data[0].is_explored);
+      setTerrain(response.data[0].terrain_type);
     })
     .catch(err => console.log("Error loading hex info:",err));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -42,12 +44,12 @@ const HexDetail = (props) => {
           :
           <div>
             <h2>{title}</h2>
-            {props.hexCoords}<br/>
-            {isEmpty ? 'Nothing to see here' :
+            {props.hexCoords} [{terrain}]<br/>
+            {!isExplored ? 'This land is unexplored.' :
               <pre>
-                TODO: add list of sub-locations within this hex...
+                TODO: add list locations within this hex...
                 <br/>
-                WHERE hex={props.hexCoords} and subhex != ''
+                WHERE hex={props.hexCoords}
               </pre>
             }
           </div>

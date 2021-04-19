@@ -8,6 +8,7 @@ import sessionDef from '../models/sessionDef';
 import locationDef from '../models/locationDef';
 import adventureDef from '../models/adventureDef';
 import characterDef from '../models/characterDef';
+import hexDef from '../models/hexDef';
 import userDef from '../models/userDef';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
@@ -22,7 +23,9 @@ const Home = () => {
       dispatch(registerDef(locationDef));
       dispatch(registerDef(adventureDef));
       dispatch(registerDef(characterDef));
+      dispatch(registerDef(hexDef));
       dispatch(registerDef(userDef));
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
@@ -113,9 +116,14 @@ const Home = () => {
                     <div>
                         <Tabs>
                             <TabList>
+                                <Tab>Hexes</Tab>
                                 <Tab>Users</Tab>
                             </TabList>
 
+                            <TabPanel>
+                                <h3>Hexes</h3>
+                                <EntityBase entityDef={hexDef} includeOps={true} />
+                            </TabPanel>
                             <TabPanel>
                                 <h3>Registered Players</h3>
                                 <EntityBase entityDef={userDef} includeOps={true} />
