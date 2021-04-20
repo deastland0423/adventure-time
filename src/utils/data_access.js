@@ -8,21 +8,4 @@
 const safeGetProp = (obj, path, default_value = null) =>
   path.reduce((xs, x) => (xs && xs[x]) ? xs[x] : default_value, obj)
 
-function padTime(number) {
-  if (number < 10) return `0${number}`;
-  return number;
-}
-
-const dateOnlyFormat = (date) =>
-  date.getFullYear() + '-' +
-  padTime(date.getMonth() + 1) + '-' +
-  padTime(date.getDate());
-
-const timeOnlyFormat = (date) =>
-  padTime(date.getHours()) + ':' +
-  padTime(date.getMinutes());
-
-const dateTimeFormat = (date) =>
-  dateOnlyFormat(date) + ' ' + timeOnlyFormat(date);
-
-module.exports = { safeGetProp, dateOnlyFormat, timeOnlyFormat, dateTimeFormat };
+module.exports = { safeGetProp };

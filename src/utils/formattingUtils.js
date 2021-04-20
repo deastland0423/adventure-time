@@ -10,4 +10,16 @@ const padNumber = (value, digits) => {
   return `000000000000000000000000000000000000000000000${value}`.slice(-digits);
 }
 
-module.exports = { hexCoordsDisplay, padNumber };
+const dateOnlyFormat = (date) =>
+  date.getFullYear() + '-' +
+  padNumber(date.getMonth() + 1, 2) + '-' +
+  padNumber(date.getDate(), 2);
+
+const timeOnlyFormat = (date) =>
+  padNumber(date.getHours(), 2) + ':' +
+  padNumber(date.getMinutes(), 2);
+
+const dateTimeFormat = (date) =>
+  dateOnlyFormat(date) + ' ' + timeOnlyFormat(date);
+
+module.exports = { hexCoordsDisplay, padNumber, dateOnlyFormat, timeOnlyFormat, dateTimeFormat };

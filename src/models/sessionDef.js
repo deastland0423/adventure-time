@@ -1,4 +1,5 @@
-const { safeGetProp, dateTimeFormat, timeOnlyFormat } = require('../utils/data_access');
+const { safeGetProp } = require('../utils/data_access');
+const { dateTimeFormat, timeOnlyFormat } = require('../utils/formattingUtils');
 
 const sessionDef = {
   resource_type: 'session',
