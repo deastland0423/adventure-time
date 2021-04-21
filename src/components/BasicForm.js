@@ -1,65 +1,74 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import constants from '../utils/constants';
 import AppConfig from '../config';
+import { useUserContext } from "../contexts/UserContext";
+import { useResourceContext } from "../contexts/ResourceContext";
 const { safeGetProp } = require('../utils/data_access');
 
-class BasicFormComponent extends Component {
-  /**
-   * Component props must include:
-   * - resourceDef - the resource/model definition
-   * - userContext - UserContext value from context consumer
-   * - resourceContext - ResourceContext value from context consumer
-   * - onComplete - a function called when the form submission is processed successfully
-   * - onCancel - a function called when the cancel button is clicked
-   */
-  constructor(props) {
-    super(props);
-    this.state = {
-      options: {},
-      success_message: '',
-      error_message: ''
-    }
-    this.clearData();
+const BasicFormComponent = ({
+  resourceDef,  // the resource/model definition, required.
+  formData,     // data values to populate the form, optional.
+  onComplete,   // a function called when the form submission is processed successfully, optional.
+  onCancel      // a function called when the cancel button is clicked, optional.
+}) => {
+  const { auth } = useUserContext();
+  const { resource } = useResourceContext();
+  const [ options, setOptions ] = useState({});
+  const [ messageText, setMessageText ] = useState('');
+  const [ messageType, setMessageType ] = useState('');
+  const [ record, setRecord ] = useState({});
+  const [ isNew, setIsNew ] = useState(null);
 
-    // SECTION: Check resourceDef and initialize options where needed
-    // in constructor, initialize all options as empty
-    this.initializeOptions();
-    // send async calls to populate the options values
-    this.getOptionsAsync();
-  }
+  useEffect(() => {
+    if(formData) {
+      loadData(formData);
+    } else {
+      clearData();
+    }
+  }, [formData]);
+
+  useEffect(() => {
+    // synchronously, initialize all options as empty
+    syncInitializeOptions();
+    // send async calls to populate the options values from DB query
+    asyncPopulateOptions();
+  }, [resourceDef]);
 
   /**
    * Initializes options data structures as blank, runs synchronously during constructor.
    */
-  initializeOptions() {
+  function syncInitializeOptions() {
     let initOptions = {};
-    for (let i=0; i++; i<this.props.resourceDef.fields.length) {
-      const field = this.props.resourceDef.fields[i];
+    for (let i=0; i++; i<resourceDef.fields.length) {
+      const field = resourceDef.fields[i];
       if (field.html_input_type === 'select') {
         initOptions[field.id] = [];
       }
     }
-    this.setState({options: initOptions});
+    setOptions(initOptions);
   }
 
   /**
    * Gets actual options values via async network call.
    */
-  getOptionsAsync() {
-    this.props.resourceDef.fields.forEach(field => {
+  function asyncPopulateOptions() {
+    resourceDef.fields.forEach(field => {
       if (field.html_input_type === 'select') {
         const context = {
-          auth: this.props.userContext.auth,
-          resourceContext: this.props.resourceContext
+          auth: auth,
+          resourceContext: {resource}
         };
-        field.getOptionsAsync(context).then(options => {
-          let stateUpdate = { options: {...this.state.options, [field.id]: options } };
-          if (typeof this.state[field.id] === 'undefined' && options.length) {
+        field.getOptionsAsync(context).then(asyncOptions => {
+          if (typeof record[field.id] === 'undefined' && asyncOptions.length) {
             // if not already set, set current value of drop-down to the first option
-            stateUpdate[field.id] = options[0].id;
+            setRecord(prevRecord => {
+              return {...prevRecord, [field.id]: asyncOptions[0].id}
+            });
           }
-          this.setState(stateUpdate);
+          setOptions(prevOpt => {
+            return { ...prevOpt, [field.id]: asyncOptions }
+          });
         })
         .catch(err => {
           console.log(`Error getting options for ${field.id}: ${err}`);
@@ -71,76 +80,71 @@ class BasicFormComponent extends Component {
   /**
    * Runs before setState() to update calculated or auto-assigned fields
    */
-  preUpdateState(stateUpdate) {
-    this.props.resourceDef.fields.forEach(field => {
-      if (!stateUpdate[field.id] && field.auto_assign) {
+  function preUpdateState(recordData) {
+    resourceDef.fields.forEach(field => {
+      if (!recordData[field.id] && field.auto_assign) {
         let contextArg = {};
-        contextArg.auth = this.props.userContext.auth;
-        contextArg.record = stateUpdate;
-        stateUpdate[field.id] = field.auto_assign(contextArg)
+        contextArg.auth = auth;
+        contextArg.record = recordData;
+        recordData[field.id] = field.auto_assign(contextArg)
       }
     });
-    return stateUpdate;
+    return recordData;
   }
 
   // Clear the data in the form.
-  clearData() {
-    let stateUpdate = {
-      success_message: '',
-      error_message: '',
-      isNew: true
-    };
-    this.props.resourceDef.fields.forEach(field => {
+  function clearData() {
+    setMessageText('');
+    setIsNew(true);
+    let recordData = {};
+    resourceDef.fields.forEach(field => {
       // set each field to default value
       if ('default_value' in field) {
-        stateUpdate[field.id] = field.default_value
-      } else if (field.html_input_type === 'select' && safeGetProp(this.state, ['options', field.id], []).length ) {
-        stateUpdate[field.id] = this.state.options[field.id][0].id;
+        recordData[field.id] = field.default_value
+      } else if (field.html_input_type === 'select' && safeGetProp(options, [field.id], []).length ) {
+        recordData[field.id] = options[field.id][0].id;
       } else {
-        stateUpdate[field.id] = ''
+        recordData[field.id] = '';
       }
     });
-    stateUpdate = this.preUpdateState(stateUpdate);
-    this.setState(stateUpdate);
+    recordData = preUpdateState(recordData);
+    setRecord(recordData);
   }
 
   // Load data from the given record into the form.
-  loadData(record) {
-    if (!record) return
-    let stateUpdate = {
-      success_message: '',
-      error_message: '',
-      isNew: false
-    };
-    this.props.resourceDef.fields.forEach(field => {
+  function loadData(record) {
+    setMessageText('');
+    setIsNew(false);
+    let recordData = {};
+    resourceDef.fields.forEach(field => {
       if (field.html_input_type === "datetime-local") {
         if (record[field.id].slice(-1) === 'Z') {
           record[field.id] = record[field.id].slice(0, -1)    // remove trailing Z
         }
       }
       if (field.id in record) {
-        stateUpdate[field.id] = record[field.id];
+        recordData[field.id] = record[field.id];
       }
     });
-    stateUpdate = this.preUpdateState(stateUpdate);
-    this.setState(stateUpdate);
+    recordData = preUpdateState(recordData);
+    setRecord(recordData);
   }
 
-  contentFields() {
+  function contentFields() {
     let contentFields = [];
-    this.props.resourceDef.fields.forEach(field => {
-      if(field.id !== this.props.resourceDef.id_field) {
+    resourceDef.fields.forEach(field => {
+      if(field.id !== resourceDef.id_field) {
         contentFields.push(field);
       }
     });
     return contentFields;
   }
 
-  canEditField(field) {
+  function canEditField(field) {
     if ('editAccess' in field && field.editAccess) {
       const req = {
         locals: {
-          currentUser: safeGetProp(this.props.userContext, ['auth', 'user'])
+          currentUser: safeGetProp(auth, ['user'])
         }
       };
       return field.editAccess(req);
@@ -150,95 +154,91 @@ class BasicFormComponent extends Component {
     }
   }
 
-  handleSubmit = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    if (this.state.isNew) {
-      const createUrl = `${AppConfig.backend_host}${this.props.resourceDef.endpoints.create}`;
+    if (isNew) {
+      const createUrl = `${AppConfig.backend_host}${resourceDef.endpoints.create}`;
       axios
-      .post(createUrl, this.state)
+      .post(createUrl, record)
       .then( response => {
-        this.setState( { success_message: response.data, error_message: '' } );
-        setTimeout(() => this.setState({success_message:''}), constants.AUTOHIDE_SUCCESS_MESSAGES_SEC*1000);
-        this.props.onComplete();
+        setMessageText(response.data);
+        setMessageType('success');
+        setTimeout(() => setMessageText(''), constants.AUTOHIDE_SUCCESS_MESSAGES_SEC*1000);
+        if(onComplete)
+          onComplete();
       })
       .catch( error => {
-        this.setState( { error_message: error.response.data, success_message: '' } );
+        setMessageText(error.response.data);
+        setMessageType('error');
       });
     } else {
-      const updateUrl = `${AppConfig.backend_host}${this.props.resourceDef.endpoints.update}/${this.state[this.props.resourceDef.id_field]}`;
+      const updateUrl = `${AppConfig.backend_host}${resourceDef.endpoints.update}/${record[resourceDef.id_field]}`;
       axios
-      .put(updateUrl, this.state)
+      .put(updateUrl, record)
       .then( response => {
-        this.setState( { success_message: response.data, error_message: '' } );
-        setTimeout(() => this.setState({success_message:''}), constants.AUTOHIDE_SUCCESS_MESSAGES_SEC*1000);
-        this.props.onComplete();
+        setMessageText(response.data);
+        setMessageType('success');
+        setTimeout(() => setMessageText(''), constants.AUTOHIDE_SUCCESS_MESSAGES_SEC*1000);
+        if(onComplete)
+          onComplete();
       })
       .catch( error => {
-        this.setState( { error_message: error.response.data, success_message: '' } );
+        console.log("caught error",error);
+        setMessageText(error.response.data);
+        setMessageType('error');
       });
     }
   };
 
-  buttonHandler(handler) {
-    return async (event) => {
-      event.preventDefault();
-      if (typeof handler === "function") {
-        handler();
-      } else {
-        console.log("WARNING: No handler function defined.")
-      }
-    }
-  }
-
-  getFieldKey(field) {
-    let key = this.props.resourceDef.resource_type+'_form_'+field.id;
+  function getFieldKey(field) {
+    let key = resourceDef.resource_type+'_form_'+field.id;
     if (field.html_input_type === 'checkbox') {
-      key = key+'_'+this.state[field.id];
+      key = key+'_'+record[field.id];
     }
     return key;
   }
 
-  render() {
-    return(
-      <form onSubmit={this.handleSubmit}>
-        <div className='message error'>{this.state.error_message}</div>
-        <div className='message success'>{this.state.success_message}</div>
-        {this.contentFields().map(field =>
-          (field.html_input_type && this.canEditField(field) ?
-            <div key={this.getFieldKey(field)}>
-              <label htmlFor={field.id}>{field.label}</label>
-              {field.html_input_type === 'checkbox' ?
-                <input type="checkbox" id={field.id} name={field.id} defaultChecked={this.state[field.id]}
-                  onChange={event => this.setState({ [field.id]: event.target.checked ? true : false })}
-                />
+  return(
+    <form onSubmit={(e)=>e.preventDefault()}>
+      <div className={`message ${messageType}`}>{messageText}</div>
+      {contentFields().map(field =>
+        (field.html_input_type && canEditField(field) ?
+          <div key={getFieldKey(field)}>
+            <label htmlFor={field.id}>{field.label}</label>
+            {field.html_input_type === 'checkbox' ?
+              <input type="checkbox" id={field.id} name={field.id} defaultChecked={record[field.id]}
+                onChange={event => setRecord({ ...record, [field.id]: event.target.checked ? true : false })}
+              />
+            :
+              (field.html_input_type === 'select' ?
+                <select name={field.id}
+                  value={record[field.id]}
+                  onChange={event => setRecord({ ...record, [field.id]: event.target.options[event.target.options.selectedIndex].value }) }
+                >
+                  {safeGetProp(options, [field.id], []).map(option =>
+                      <option key={`${field.id}_${option.id}`} value={option.id}
+                      >{option.label}</option>
+                  )}
+                </select>
               :
-                (field.html_input_type === 'select' ?
-                  <select name={field.id}
-                    value={this.state[field.id]}
-                    onChange={event => this.setState({ [field.id]: event.target.options[event.target.options.selectedIndex].value }) }
-                  >
-                    {safeGetProp(this.state.options, [field.id], []).map(option =>
-                        <option key={`${field.id}_${option.id}`} value={option.id}
-                        >{option.label}</option>
-                    )}
-                  </select>
-                :
-                  <input type={field.html_input_type} name={field.id} defaultValue={this.state[field.id]}
-                    onChange={event => this.setState({ [field.id]: event.target.value })}
-                  />
-                )
-              }
-              <br/>
-            </div>
-          : null)
-        )}
-        <input type="submit" value={`${this.state.isNew ? 'Create' : 'Save'} ${this.props.resourceDef.label}`} data-test="submit" />
-          {this.props.onCancel ?
-            <button onClick={this.buttonHandler(this.props.onCancel)}>Cancel</button>
-          : null}
-      </form>
-    );
-  }
+                <input type={field.html_input_type} name={field.id} defaultValue={record[field.id]}
+                  onChange={event => setRecord({...record, [field.id]: event.target.value })}
+                />
+              )
+            }
+            <br/>
+          </div>
+        : null)
+      )}
+      <input type="submit"
+        value={`${isNew ? 'Create' : 'Save'} ${resourceDef.label}`}
+        onClick={handleSubmit}
+      />
+      {onCancel ?
+        <button onClick={onCancel}>Cancel</button>
+      : null}
+    </form>
+  );
 }
 
 export default BasicFormComponent;

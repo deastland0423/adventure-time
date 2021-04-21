@@ -3,7 +3,6 @@ import axios from 'axios';
 import AppConfig from '../config';
 import Table from './Table';
 import BasicForm from './BasicForm';
-import { ResourceContext } from "../contexts/ResourceContext";
 import { UserContext, curUserCan } from "../contexts/UserContext";
 const { safeGetProp } = require('../utils/data_access');
 
@@ -14,11 +13,10 @@ class ResourceBaseComponent extends Component {
    */
   constructor(props) {
     super(props);
-    this.formRef = createRef(null);
-    this.formWrapperRef = createRef(null);
-    this.createButtonRef = createRef(null);
     this.state = {
+      showCreateButton: true,
       showForm: false,
+      formData: null,
       records: []
     };
   }
@@ -58,27 +56,19 @@ class ResourceBaseComponent extends Component {
     return tableData;
   }
 
-  showForm() {
-    this.formWrapperRef.current.classList.remove('hidden');
-  }
-
-  hideForm() {
-    this.formWrapperRef.current.classList.add('hidden');
-  }
-
   showCreate = () => {
-    this.formRef.current.clearData();
-    this.showForm()
-    if (this.createButtonRef.current) {
-      this.createButtonRef.current.classList.add('hidden');
-    }
+    this.setState({
+      formData: null,
+      showForm: true,
+      showCreateButton: false
+    });
   }
 
-  hideCreate = () => {
-    this.hideForm()
-    if (this.createButtonRef.current) {
-      this.createButtonRef.current.classList.remove('hidden');
-    }
+  hideForm = () => {
+    this.setState({
+      showForm: false,
+      showCreateButton: true
+    });
   }
 
   getRecord(record_id) {
@@ -93,15 +83,15 @@ class ResourceBaseComponent extends Component {
 
   showEdit(record_id) {
     // get data for record to be edited
-    const recordData = this.getRecord(record_id);
-    this.formRef.current.loadData(recordData);
-    this.showForm()
-    if (this.createButtonRef.current) {
-      this.createButtonRef.current.classList.remove('hidden');
-    }
+    this.setState({
+      formData: this.getRecord(record_id),
+      showForm: true,
+      showCreateButton: true
+    });
   }
 
   doDelete(record_id) {
+    if(!window.confirm(`Delete ${this.props.resourceDef.resource_type} #${record_id}?`)) return;
     let deleteOneUrl = `${AppConfig.backend_host}${this.props.resourceDef.endpoints.deleteOne}/${record_id}`;
     axios
     .delete(deleteOneUrl)
@@ -120,7 +110,7 @@ class ResourceBaseComponent extends Component {
   }
 
   finishForm() {
-    this.hideForm();
+    this.setState({showForm:false});
     this.refreshTableData();
   }
 
@@ -154,26 +144,16 @@ class ResourceBaseComponent extends Component {
   render() {
     return(
       <div>
-        <div ref={this.formWrapperRef} className={this.state.showForm ? null : 'hidden'}>
-          <UserContext.Consumer>
-            {userContext =>
-              <ResourceContext.Consumer>
-                {resCntx =>
-                  <BasicForm
-                    userContext={userContext}
-                    resourceContext={resCntx}
-                    resourceDef={this.props.resourceDef}
-                    onComplete={() => this.finishForm()}
-                    ref={this.formRef}
-                    onCancel={this.hideCreate}
-                  />
-                }
-              </ResourceContext.Consumer>
-            }
-          </UserContext.Consumer>
-        </div>
-        {curUserCan(safeGetProp(this, ['context', 'auth']), 'POST', this.props.resourceDef.endpoints.create) ?
-          <button ref={this.createButtonRef} onClick={this.showCreate}>New {this.props.resourceDef.label}</button>
+        {this.state.showForm ?
+          <BasicForm
+            formData={this.state.formData}
+            resourceDef={this.props.resourceDef}
+            onComplete={() => this.finishForm()}
+            onCancel={this.hideForm}
+          />
+        : null }
+        {this.state.showCreateButton && curUserCan(safeGetProp(this, ['context', 'auth']), 'POST', this.props.resourceDef.endpoints.create) ?
+          <button onClick={this.showCreate}>New {this.props.resourceDef.label}</button>
           : null
         }
         <Table

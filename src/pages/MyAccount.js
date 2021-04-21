@@ -1,17 +1,14 @@
-import { useRef, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useUserContext } from "../contexts/UserContext";
 import BasicForm from '../components/BasicForm';
 import userDef from '../models/userDef';
 
 const MyAccount = () => {
   const { auth } = useUserContext();
-  const formRef = useRef(null);
+  const [ user, setUser ] = useState(null);
   useEffect(() => {
-    const recordData = auth.user;
-    if (formRef.current) {
-      formRef.current.loadData(recordData);
-    }
-  });
+    setUser(auth.user);
+  }, [auth]);
 
   return(
     <div id="my-account" className="outer">
@@ -19,11 +16,8 @@ const MyAccount = () => {
       <div className="inner">
         {auth.user ?
           <BasicForm
-            userContext={{auth}}
             resourceDef={userDef}
-            onComplete={() => {}}
-            ref={formRef}
-            onCancel={false}
+            formData={user}
           />
         :
           <strong>You must be logged in to access this page.</strong>
