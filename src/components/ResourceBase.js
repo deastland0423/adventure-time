@@ -1,4 +1,4 @@
-import React, { Component, createRef } from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import AppConfig from '../config';
 import Table from './Table';

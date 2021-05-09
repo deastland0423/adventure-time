@@ -1,4 +1,11 @@
 const constants = {
+  TERRAIN_TYPES: {
+    LIGHT_FOREST: 'Light forest',
+    DENSE_FOREST: 'Dense forest',
+    GRASSLAND: 'Grassland',
+    MOUNTAIN: 'Mountain',
+    SWAMP: 'Swamp'
+  },
   AUTOHIDE_SUCCESS_MESSAGES_SEC: 3,
   DEBUG_PERMS: false,
   MAP_ID: 1,

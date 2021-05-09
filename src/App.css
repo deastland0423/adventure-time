@@ -150,8 +150,18 @@
   font-size: 36px;
 }
 .loading img {
-  padding-right: 20px;
+  margin-right: 20px;
 }
+.loading.small {
+  margin-top: 1rem;
+  font-size: 16px;
+}
+.loading.small img {
+  margin-right: 10px;
+  height: 32px;
+  width: 32px;
+}
+
 
 #modal-backdrop {
   position: fixed;
@@ -176,4 +186,13 @@
 
 #modal-contents #close {
   float:right;
+}
+
+form label {
+  font-weight: bold;
+  margin-right: 5px;
+}
+.adventure-form .name-field {
+  width: 20rem;
+  max-width: 100%;
 }
