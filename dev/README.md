@@ -1,26 +1,11 @@
 # Local Development
 
-You can run the front-end app in a docker container by building and running the Dockerfile here.
+1. Run the app in a docker-based development environment from the project root:
+  `./dev/dockdev.sh`
 
-1. Create a symlink for the node_modules directory. This keeps them inside the container and improves performance.
-`ln -s /tmp/node_modules`
+2. Run a command within the container (e.g. npm commands)
+  `docker exec -it $DOCKER_CONTAINER <command>`
+  e.g.
+  `docker exec -it $DOCKER_CONTAINER npm install package`
 
-2. Build the docker image
-`docker build dev -t nodedev`
-
-3. Start up the app in the local container.
-
-  Starting it for the first time:
-
-  `docker run -it --name mynode -v `pwd`:/app -p 3000:3000 nodedev`
-
-You can access the app locally now at http://localhost:3000/
-
-* If the container has already been started, you may see an error saying the name is in use.
-  If you see this, just run:
-  `docker start mynode`
-
-  and then you can watch the 'yarn start' output with:
-  `docker logs -f mynode`
-
-* To get a shell inside the container (e.g. to run yarn commands), run: `docker exec -it mynode bash`
+#TODO: add start / cmd / stop to dockdev.sh
