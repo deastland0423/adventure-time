@@ -2,8 +2,17 @@
   text-align: center;
 }
 
+footer {
+  position: fixed;
+  bottom: 0;
+  background-color: #ddd;
+  width: 100%;
+  min-height: 2em;
+}
+
 .footer {
   text-align: center;
+  margin: 0.5em auto;
 }
 
 .App-logo {
@@ -39,6 +48,10 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.app h2 {
+  margin-top: 1em;
 }
 
 .message.success {
