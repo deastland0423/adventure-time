@@ -65,6 +65,9 @@ footer {
 .centered {
   margin: 0 auto;
 }
+.left {
+  text-align: left;
+}
 .data-table th,
 .data-table td {
   border: 1px solid black;
