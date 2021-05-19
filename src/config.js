@@ -1,9 +1,4 @@
-const localConfig = require('./config.local');
-const defaultAppConfig = {
-  backend_host: "https://62zrxtutca.execute-api.us-east-1.amazonaws.com/dev"
-};
 const AppConfig = {
-  ...defaultAppConfig,
-  ...localConfig
+  backend_host: process.env.REACT_APP_BACKEND_HOST
 }
 export default AppConfig;
