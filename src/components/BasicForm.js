@@ -56,8 +56,8 @@ const BasicFormComponent = ({
     resourceDef.fields.forEach(field => {
       if (field.html_input_type === 'select') {
         const context = {
-          auth: auth,
-          resourceContext: {resource}
+          auth,
+          resource
         };
         field.getOptionsAsync(context).then(asyncOptions => {
           if (typeof record[field.id] === 'undefined' && asyncOptions.length) {

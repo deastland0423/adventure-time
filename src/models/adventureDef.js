@@ -50,7 +50,7 @@ const adventureDef = {
       html_input_type: 'select',
       table_display: false,
       getOptionsAsync: async (context) => {
-        const resourceHandler = context.resourceContext.resource.handlers['location'];
+        const resourceHandler = context.resource.handlers['location'];
         // return promise of options array
         return resourceHandler.callApi('getMultipleByQuery')
           .then(response => {
