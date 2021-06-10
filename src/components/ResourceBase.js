@@ -116,6 +116,10 @@ class ResourceBaseComponent extends Component {
 
   refreshTableData = () => {
     let getAllUrl = `${AppConfig.backend_host}${this.props.resourceDef.endpoints.getMultipleByQuery}`;
+    if (this.props.queryParams) {
+      const queryString = Object.entries(this.props.queryParams).map(([key,val]) => `${key}=${val}`).join('&');
+      getAllUrl += '?' + queryString;
+    }
     axios
     .get(getAllUrl)
     .then( response => {

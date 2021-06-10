@@ -1,3 +1,4 @@
+import ManageCharacter from '../components/ManageCharacter';
 const { safeGetProp } = require('../utils/data_access');
 
 const characterDef = {
@@ -53,6 +54,11 @@ const characterDef = {
       table_display: false
     }
   ],
+  extra_operations: (context) => {
+    return (
+      <ManageCharacter context={context}/>
+    );
+  },
   endpoints: {
     getMultipleByQuery: '/characters/view',
     create: '/characters',

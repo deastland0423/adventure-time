@@ -61,7 +61,7 @@ const Home = () => {
                 </TabList>
                 <TabPanel>
                   <h3>Your Characters</h3>
-                  <ResourceBase resourceDef={characterDef} includeOps={false} />
+                  <ResourceBase resourceDef={characterDef} includeOps={true} queryParams={{owner_user_id: auth.user.user_id}} />
                 </TabPanel>
                 <TabPanel>
                   <HexMap/>
