@@ -1,8 +1,6 @@
 #hexmap svg {
   border: 1px solid black;
   padding: 10px;
-  background-image: url("https://2.bp.blogspot.com/-tMzN7-Z8m3Q/UKd4-RcchtI/AAAAAAAABEo/5I0VNmnX9Q0/s1600/fantasy_7bdc2a22.jpg");
-  background-repeat: no-repeat;
 }
 #hexmap .hex {
   stroke: whitesmoke;

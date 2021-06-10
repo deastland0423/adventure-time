@@ -1,7 +1,8 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import constants from '../../utils/constants';
 import { useModalContext, showModal } from "../../contexts/ModalContext";
 import { useResourceContext } from "../../contexts/ResourceContext";
+import { useUserContext } from "../../contexts/UserContext";
 import { hexCoordsDisplay } from '../../utils/formattingUtils';
 import './map.css';
 import HexDetail from './HexDetail';
@@ -10,10 +11,12 @@ import terrain_denseforest from '../../images/terrain_denseforest.png';
 import terrain_grassland from '../../images/terrain_grassland.png';
 import terrain_mountain from '../../images/terrain_mountain.png';
 import terrain_swamp from '../../images/terrain_swamp.png';
+const { safeGetProp } = require('../../utils/data_access');
 
 const HexMap = () => {
   const { dispatch: dispatchModal } = useModalContext();
   const { resource } = useResourceContext();
+  const { auth } = useUserContext();
   const canvasRef = useRef(null);
   const [ hexes, setHexes ] = useState({});
   // Hard-coded map constants
@@ -21,7 +24,7 @@ const HexMap = () => {
   const grid_cols = 10;   // How wide the world map is in hexes.
   const grid_rows = 10;   // How tall the world map is in hexes.
   // User-modifiable map "settings"
-  const settings_show_hex_coordinates = false;
+  const showHexCoords = safeGetProp(auth, ['user', 'prefs', 'show_hex_coords'], false);
   const settings_hex_radius = 368/2;
   const settings_initial_topleft_grid_x = 2;
   const settings_initial_topleft_grid_y = 6;
@@ -32,13 +35,13 @@ const HexMap = () => {
   let mapview_base_x = -settings_initial_topleft_grid_x * hex_width;
   let mapview_base_y = -settings_initial_topleft_grid_y * hex_height;
 
-  function getHex(coords) {
+  const getHex = useCallback((coords) => {
     if(Object.keys(hexes).includes(coords)) {
       const hex = hexes[coords];
       return hex;
     }
     return null;
-  }
+  }, [hexes]);
 
   useEffect(() => {
     // load hex definitions from the server to get terrain types
@@ -53,15 +56,17 @@ const HexMap = () => {
       setHexes(hexes);
     })
     .catch(err => alert("Error loading hexmap:"+err));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settings_show_hex_coordinates]);
+  }, [resource.handlers]);
 
-  useEffect(() => {
-    // Will draw the map when hexes are loaded.
-    drawMap();
-  }, [hexes]);
-
-  function drawMap() {
+  const drawMap = useCallback(() => {
+    // start with a blank canvas
+    for (let i=canvasRef.current.children.length-1; i>=0; i--) {
+      const element = canvasRef.current.children[i];
+      if (element.tagName !== 'defs') {
+        //console.log("Removing ",element);
+        canvasRef.current.removeChild(element);
+      }
+    }
     // draw the hexagons
     console.log("DRAWING MAP");
     const hex_radius = settings_hex_radius;
@@ -133,7 +138,7 @@ const HexMap = () => {
         hex.setAttribute("class",classList.join(' '));
         canvasRef.current.appendChild(hex);
 
-        if (settings_show_hex_coordinates) {
+        if (showHexCoords) {
           const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
           label.textContent = `${hexCoordsDisplay(grid_x,grid_y)}`;
           label.setAttribute("x", Math.ceil(base_x));
@@ -143,7 +148,12 @@ const HexMap = () => {
         }
       }
     }
-  }
+  }, [settings_hex_radius, getHex, showHexCoords, dispatchModal, hex_height, hex_width, mapview_base_x, mapview_base_y]);
+
+  useEffect(() => {
+    // Will draw the map when hexes are loaded.
+    drawMap();
+  }, [hexes, drawMap, showHexCoords]);
 
   return (
     <div id="hexmap">

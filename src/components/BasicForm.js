@@ -56,8 +56,8 @@ const BasicFormComponent = ({
     resourceDef.fields.forEach(field => {
       if (field.html_input_type === 'select') {
         const context = {
-          auth: auth,
-          resourceContext: {resource}
+          auth,
+          resource
         };
         field.getOptionsAsync(context).then(asyncOptions => {
           if (typeof record[field.id] === 'undefined' && asyncOptions.length) {
@@ -122,7 +122,7 @@ const BasicFormComponent = ({
           record[field.id] = record[field.id].slice(0, -1)    // remove trailing Z
         }
       }
-      if (field.id in record) {
+      if (Object.keys(record).includes(field.id)) {
         recordData[field.id] = record[field.id];
       }
     });
@@ -199,7 +199,7 @@ const BasicFormComponent = ({
   }
 
   return(
-    <form onSubmit={(e)=>e.preventDefault()}>
+    <form onSubmit={(e)=>e.preventDefault()} className={`${resourceDef.resource_type}-form`}>
       <div className={`message ${messageType}`}>{messageText}</div>
       {contentFields().map(field =>
         (field.html_input_type && canEditField(field) ?
@@ -208,12 +208,14 @@ const BasicFormComponent = ({
             {field.html_input_type === 'checkbox' ?
               <input type="checkbox" id={field.id} name={field.id} defaultChecked={record[field.id]}
                 onChange={event => setRecord({ ...record, [field.id]: event.target.checked ? true : false })}
+                className={`${field.id}-field`}
               />
             :
               (field.html_input_type === 'select' ?
                 <select name={field.id}
                   value={record[field.id]}
                   onChange={event => setRecord({ ...record, [field.id]: event.target.options[event.target.options.selectedIndex].value }) }
+                  className={`${field.id}-field`}
                 >
                   {safeGetProp(options, [field.id], []).map(option =>
                       <option key={`${field.id}_${option.id}`} value={option.id}
@@ -223,6 +225,7 @@ const BasicFormComponent = ({
               :
                 <input type={field.html_input_type} name={field.id} defaultValue={record[field.id]}
                   onChange={event => setRecord({...record, [field.id]: event.target.value })}
+                  className={`${field.id}-field`}
                 />
               )
             }

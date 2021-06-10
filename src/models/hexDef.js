@@ -1,3 +1,6 @@
+import constants from '../utils/constants';
+import CreateLocation from '../components/admin/CreateLocation';
+
 const hexDef = {
   resource_type: 'hex',
   label: 'Hex',
@@ -17,10 +20,10 @@ const hexDef = {
       table_display: true
     },
     {
-        id: 'coords',
-        label: 'Coordinates',
-        html_input_type: 'text',
-        table_display: true
+      id: 'coords',
+      label: 'Coordinates',
+      html_input_type: 'text',
+      table_display: true
     },
     {
       id: 'is_explored',
@@ -40,13 +43,11 @@ const hexDef = {
       html_input_type: 'select',
       table_display: true,
       getOptionsAsync: async (context) => {
-        return Promise.resolve([
-          {id:'LIGHT_FOREST', label:'Light Forest'},
-          {id:'DENSE_FOREST',label:'Dense forest'},
-          {id:'GRASSLAND',label:'Grassland'},
-          {id:'MOUNTAIN',label:'Mountain'},
-          {id:'SWAMP',label:'Swamp'}
-        ]);
+        let options = [];
+        for (const [key, label] of Object.entries(constants.TERRAIN_TYPES)) {
+          options.push({id: key, label: label});
+        }
+        return Promise.resolve(options);
       }
     },
     {
@@ -55,10 +56,21 @@ const hexDef = {
       default_value: 1,
       html_input_type: 'number',
       table_display: false
-      }
+    },
+    {
+      id: 'location_id',
+      label: 'Main Location',
+      html_input_type: false,
+      table_display: true
+    }
   ],
+  extra_operations: (context) => {
+    return (
+      <CreateLocation context={context}/>
+    );
+  },
   endpoints: {
-    getMultipleByQuery: '/hexes',
+    getMultipleByQuery: '/hexes/view',
     create: '/hexes',
     update: '/hex',
     deleteOne: '/hex'

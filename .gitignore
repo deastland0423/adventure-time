@@ -22,4 +22,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .eslintcache
-src/config.local.js
+
+# local dev
+dev/packages.installed
+dev/localdev.env

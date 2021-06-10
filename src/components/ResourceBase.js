@@ -1,4 +1,4 @@
-import React, { Component, createRef } from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import AppConfig from '../config';
 import Table from './Table';
@@ -114,15 +114,24 @@ class ResourceBaseComponent extends Component {
     this.refreshTableData();
   }
 
-  refreshTableData() {
+  refreshTableData = () => {
     let getAllUrl = `${AppConfig.backend_host}${this.props.resourceDef.endpoints.getMultipleByQuery}`;
+    if (this.props.queryParams) {
+      const queryString = Object.entries(this.props.queryParams).map(([key,val]) => `${key}=${val}`).join('&');
+      getAllUrl += '?' + queryString;
+    }
     axios
     .get(getAllUrl)
     .then( response => {
       let tableData = response.data.map(row => {
         row.id = row[this.props.resourceDef.id_field];
+        let extraOps = '';
+        if (this.props.resourceDef.extra_operations) {
+          const context = { ...this.context, row, refreshTableData: this.refreshTableData }
+          extraOps = this.props.resourceDef.extra_operations(context);
+        }
         row.__OPERATIONS = (
-          <div>
+          <div className="left">
             {curUserCan(safeGetProp(this, ['context', 'auth']), 'DELETE', this.props.resourceDef.endpoints.deleteOne+'/'+row.id) ?
               <button onClick={() => this.doDelete(row.id)}>delete</button>
               : null
@@ -131,6 +140,7 @@ class ResourceBaseComponent extends Component {
               <button onClick={() => this.showEdit(row.id)}>edit</button>
               : null
             }
+            {extraOps}
           </div>
         )
         return row;
@@ -139,7 +149,7 @@ class ResourceBaseComponent extends Component {
         records: tableData
       });
     });
-  }
+  };
 
   render() {
     return(
