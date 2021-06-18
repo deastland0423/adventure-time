@@ -19,22 +19,24 @@ const HexMap = () => {
   const { resource } = useResourceContext();
   const { auth } = useUserContext();
   const canvasRef = useRef(null);
+  const mapDivRef = useRef(null);
   const [ hexes, setHexes ] = useState({});
   // Hard-coded map constants
-  const mapview_height_hexes = 10; // How many full hexes are shown in the map view.
   const grid_cols = 10;   // How wide the world map is in hexes.
   const grid_rows = 10;   // How tall the world map is in hexes.
+  const mapview_height_hexes = grid_rows; // How many full hexes are shown in the map view.
   // User-modifiable map "settings"
   const showHexCoords = safeGetProp(auth, ['user', 'prefs', 'show_hex_coords'], false);
   const settings_hex_radius = 368/2;
-  const settings_initial_topleft_grid_x = 0;
-  const settings_initial_topleft_grid_y = 0;
+  // The map will be auto-scrolled to this grid hex:
+  const settings_initial_topleft_grid_x = 2;
+  const settings_initial_topleft_grid_y = 6;
   // calculate derived constants
   const hex_height = Math.ceil(settings_hex_radius * Math.sin(2*Math.PI * 1/6)) * 2;
   const hex_width = settings_hex_radius * 2;
   const map_height = mapview_height_hexes * hex_height;
-  let mapview_base_x = -settings_initial_topleft_grid_x * hex_width;
-  let mapview_base_y = -settings_initial_topleft_grid_y * hex_height;
+  const hex_spacing = Math.ceil(  settings_hex_radius * (Math.cos(2*Math.PI * 1/6) - Math.cos(2*Math.PI * 2/6) )   );
+  const map_width = Math.ceil(settings_hex_radius + grid_cols*(hex_spacing+(hex_width-hex_spacing)/2));
 
   const getHex = useCallback((coords) => {
     if(Object.keys(hexes).includes(coords)) {
@@ -51,7 +53,6 @@ const HexMap = () => {
       let hexes=[];
       for(let i=0; i<response.data.length; i++) {
         const hex = response.data[i];
-        console.log(hex);
         hexes[hex.coords] = hex;
       }
       setHexes(hexes);
@@ -69,15 +70,14 @@ const HexMap = () => {
       }
     }
     // draw the hexagons
-    console.log("DRAWING MAP");
     const hex_radius = settings_hex_radius;
     const hex_spacing = Math.ceil(  hex_radius * (Math.cos(2*Math.PI * 1/6) - Math.cos(2*Math.PI * 2/6) )   );
     for (let grid_x=0; grid_x<grid_cols; grid_x++) {
       for (let grid_y=0; grid_y<grid_rows; grid_y++) {
         // calculate pixel coordinates for hex from grid coordinates
         const angle_width = (hex_width-hex_spacing)/2;
-        let base_x = mapview_base_x + Math.ceil(hex_radius + grid_x*(hex_spacing+angle_width));
-        let base_y = mapview_base_y + Math.ceil(grid_y*hex_height + hex_height/2);
+        let base_x = Math.ceil(hex_radius + grid_x*(hex_spacing+angle_width));
+        let base_y = Math.ceil(grid_y*hex_height + hex_height/2);
         if (grid_x % 2 === 1) {  // offset for odd rows
           base_y += Math.ceil(hex_height/2);
         }
@@ -161,16 +161,19 @@ const HexMap = () => {
         }
       }
     }
-  }, [settings_hex_radius, getHex, showHexCoords, dispatchModal, hex_height, hex_width, mapview_base_x, mapview_base_y]);
+  }, [settings_hex_radius, getHex, showHexCoords, dispatchModal, hex_height, hex_width]);
 
   useEffect(() => {
     // Will draw the map when hexes are loaded.
     drawMap();
+    // Reset map scrollbars to center on the main hex
+    mapDivRef.current.scrollLeft = settings_initial_topleft_grid_x * hex_width;
+    mapDivRef.current.scrollTop = settings_initial_topleft_grid_y * hex_height;
   }, [hexes, drawMap, showHexCoords]);
 
   return (
-    <div id="hexmap" >
-      <svg xmlns="http://www.w3.org/2000/svg" ref={canvasRef} height={map_height} width="100%">
+    <div id="hexmap" ref={mapDivRef}>
+      <svg xmlns="http://www.w3.org/2000/svg" ref={canvasRef} height={map_height} width={map_width}>
         <defs>
           <pattern id="lightforest_bg" height="100%" width="100%">
             <image x="0" y="0" height={hex_height} width={hex_width} xlinkHref={terrain_lightforest}></image>
