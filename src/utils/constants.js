@@ -4,7 +4,13 @@ const constants = {
     DENSE_FOREST: 'Dense forest',
     GRASSLAND: 'Grassland',
     MOUNTAIN: 'Mountain',
-    SWAMP: 'Swamp'
+    SWAMP: 'Swamp',
+    DESERT: 'Desert',
+    OCEAN: 'Ocean',
+    HILLS: 'Hills',
+    BADLANDS: 'Badlands',
+    BARREN: 'Barren',
+    SETTLEMENT: 'Settlement'
   },
   AUTOHIDE_SUCCESS_MESSAGES_SEC: 3,
   DEBUG_PERMS: false,

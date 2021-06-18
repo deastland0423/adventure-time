@@ -11,6 +11,7 @@ import terrain_denseforest from '../../images/terrain_denseforest.png';
 import terrain_grassland from '../../images/terrain_grassland.png';
 import terrain_mountain from '../../images/terrain_mountain.png';
 import terrain_swamp from '../../images/terrain_swamp.png';
+import terrain_settlement from '../../images/terrain_settlement.png';
 const { safeGetProp } = require('../../utils/data_access');
 
 const HexMap = () => {
@@ -20,14 +21,14 @@ const HexMap = () => {
   const canvasRef = useRef(null);
   const [ hexes, setHexes ] = useState({});
   // Hard-coded map constants
-  const mapview_height_hexes = 3; // How many full hexes are shown in the map view.
+  const mapview_height_hexes = 10; // How many full hexes are shown in the map view.
   const grid_cols = 10;   // How wide the world map is in hexes.
   const grid_rows = 10;   // How tall the world map is in hexes.
   // User-modifiable map "settings"
   const showHexCoords = safeGetProp(auth, ['user', 'prefs', 'show_hex_coords'], false);
   const settings_hex_radius = 368/2;
-  const settings_initial_topleft_grid_x = 2;
-  const settings_initial_topleft_grid_y = 6;
+  const settings_initial_topleft_grid_x = 0;
+  const settings_initial_topleft_grid_y = 0;
   // calculate derived constants
   const hex_height = Math.ceil(settings_hex_radius * Math.sin(2*Math.PI * 1/6)) * 2;
   const hex_width = settings_hex_radius * 2;
@@ -115,6 +116,18 @@ const HexMap = () => {
             case 'SWAMP':
               hex.setAttribute("fill", "url(#swamp_bg)");
               break;
+            case 'DESERT':
+              hex.setAttribute("fill", "url(#swamp_bg)");
+              break;
+            case 'OCEAN':
+              hex.setAttribute("fill", "url(#swamp_bg)");
+              break;
+            case 'HILLS':
+              hex.setAttribute("fill", "url(#swamp_bg)");
+              break;
+            case 'SETTLEMENT':
+              hex.setAttribute("fill", "url(#settlement_bg)");
+              break;
             default:
               hex_defined = false;
           }
@@ -156,7 +169,7 @@ const HexMap = () => {
   }, [hexes, drawMap, showHexCoords]);
 
   return (
-    <div id="hexmap">
+    <div id="hexmap" >
       <svg xmlns="http://www.w3.org/2000/svg" ref={canvasRef} height={map_height} width="100%">
         <defs>
           <pattern id="lightforest_bg" height="100%" width="100%">
@@ -173,6 +186,9 @@ const HexMap = () => {
           </pattern>
           <pattern id="mountain_bg" height="100%" width="100%">
             <image x="0" y="0" height={hex_height} width={hex_width} xlinkHref={terrain_mountain}></image>
+          </pattern>
+          <pattern id="settlement_bg" height="100%" width="100%">
+            <image x="0" y="0" height={hex_height} width={hex_width} xlinkHref={terrain_settlement}></image>
           </pattern>
         </defs>
       </svg>
