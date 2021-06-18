@@ -24,11 +24,16 @@ const Nav = () => {
     axios.get(`${AppConfig.backend_host}/access-rules`).then((response) => {
       let accessRules = response.data;
       Object.keys(accessRules).forEach(route => {
-        if (accessRules[route].startsWith('(req) => ')) {
-          const functionAsString = accessRules[route].slice('(req) => '.length);
+        if (accessRules[route].startsWith('(req) =>')) {
+          const functionAsString = accessRules[route].slice('(req) =>'.length);
           const functionBody = 'return '+functionAsString;
           // eslint-disable-next-line no-new-func
           accessRules[route] = new Function('req', functionBody);
+        } else if(accessRules[route].startsWith('() =>')) {
+          const functionAsString = accessRules[route].slice('() =>'.length);
+          const functionBody = 'return '+functionAsString;
+          // eslint-disable-next-line no-new-func
+          accessRules[route] = new Function(functionBody);
         } else {
           console.log("ERROR: Could not parse function body from: ",accessRules[route]);
         }
