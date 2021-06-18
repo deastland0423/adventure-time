@@ -1,7 +1,6 @@
 #hexmap {
   overflow: scroll;
   height: 800px;
-  margin-bottom: 3em;
 }
 #hexmap svg {
   border: 1px solid black;
