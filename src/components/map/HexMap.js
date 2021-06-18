@@ -52,7 +52,6 @@ const HexMap = () => {
       let hexes=[];
       for(let i=0; i<response.data.length; i++) {
         const hex = response.data[i];
-        console.log(hex);
         hexes[hex.coords] = hex;
       }
       setHexes(hexes);
@@ -70,7 +69,6 @@ const HexMap = () => {
       }
     }
     // draw the hexagons
-    console.log("DRAWING MAP");
     const hex_radius = settings_hex_radius;
     const hex_spacing = Math.ceil(  hex_radius * (Math.cos(2*Math.PI * 1/6) - Math.cos(2*Math.PI * 2/6) )   );
     for (let grid_x=0; grid_x<grid_cols; grid_x++) {
