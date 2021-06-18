@@ -11,7 +11,10 @@ import terrain_denseforest from '../../images/terrain_denseforest.png';
 import terrain_grassland from '../../images/terrain_grassland.png';
 import terrain_mountain from '../../images/terrain_mountain.png';
 import terrain_swamp from '../../images/terrain_swamp.png';
+import terrain_hills from '../../images/terrain_hills.png';
+import terrain_desert from '../../images/terrain_desert.png';
 import terrain_settlement from '../../images/terrain_settlement.png';
+import terrain_clear from '../../images/terrain_clear.png';
 const { safeGetProp } = require('../../utils/data_access');
 
 const HexMap = () => {
@@ -117,16 +120,19 @@ const HexMap = () => {
               hex.setAttribute("fill", "url(#swamp_bg)");
               break;
             case 'DESERT':
-              hex.setAttribute("fill", "url(#swamp_bg)");
+              hex.setAttribute("fill", "url(#desert_bg)");
               break;
             case 'OCEAN':
               hex.setAttribute("fill", "url(#swamp_bg)");
               break;
             case 'HILLS':
-              hex.setAttribute("fill", "url(#swamp_bg)");
+              hex.setAttribute("fill", "url(#hills_bg)");
               break;
             case 'SETTLEMENT':
               hex.setAttribute("fill", "url(#settlement_bg)");
+              break;
+            case 'CLEAR':
+              hex.setAttribute("fill", "url(#clear_bg)");
               break;
             default:
               hex_defined = false;
@@ -192,6 +198,15 @@ const HexMap = () => {
           </pattern>
           <pattern id="settlement_bg" height="100%" width="100%">
             <image x="0" y="0" height={hex_height} width={hex_width} xlinkHref={terrain_settlement}></image>
+          </pattern>
+          <pattern id="hills_bg" height="100%" width="100%">
+            <image x="0" y="0" height={hex_height} width={hex_width} xlinkHref={terrain_hills}></image>
+          </pattern>
+          <pattern id="desert_bg" height="100%" width="100%">
+            <image x="0" y="0" height={hex_height} width={hex_width} xlinkHref={terrain_desert}></image>
+          </pattern>
+          <pattern id="clear_bg" height="100%" width="100%">
+            <image x="0" y="0" height={hex_height} width={hex_width} xlinkHref={terrain_clear}></image>
           </pattern>
         </defs>
       </svg>
