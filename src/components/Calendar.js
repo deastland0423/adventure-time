@@ -1,29 +1,39 @@
 import React, { Component } from 'react'  
 import "@fullcalendar/common/main.css";  
-// import 'bootstrap/dist/css/bootstrap.min.css';
 import "@fullcalendar/daygrid/main.css";  
 import FullCalendar from "@fullcalendar/react";  
 import dayGridPlugin from "@fullcalendar/daygrid";  
-const events = [
-  {
-    title: "Daniel Timeslot",
-    date: new Date('2021-04-01 18:00')
-  },
-  {
-    title: "Daniel Timeslot",
-    date: new Date('2021-04-10 12:00')
-  },
-  {
-    title: "Daniel Timeslot",
-    date: new Date('2021-04-15 18:00')
-  },
-  {
-    title: "Daniel Timeslot",
-    date: new Date('2021-04-29 18:00')
-  },
-];  
+import axios from 'axios';
 
 export class Calendar extends Component {  
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      eventList: []
+    }
+  }
+
+  // On component load, fetch the session dates from the database.
+  componentDidMount() {
+    axios.get(`https://62zrxtutca.execute-api.us-east-1.amazonaws.com/dev/sessions`)
+    .then( (response) => {
+      let eventSequence = [];
+      response.data.forEach(element => {
+        eventSequence.push({
+          title: "Daniel Timeslot",  //TODO: create a sessions/view endpoint that will get the DM name for the title
+          date: element.start_time
+        });
+      });
+      this.setState({
+        eventList: eventSequence
+      });
+    })
+    .catch( (err) => {
+      console.error('Error while fetching sessions: ', err);
+    });
+  }
+
   render() {  
     return (  
       <div className="container">  
@@ -33,9 +43,10 @@ export class Calendar extends Component {
           </div>  
         </div>  
         <FullCalendar  
-            defaultView="dayGridMonth"  
+            defaultView="dayGridMonth"
+            timeZone="America/Chicago"
             plugins={[dayGridPlugin]}  
-            events={events}  
+            events={this.state.eventList}  
         />  
       </div>  
     );
